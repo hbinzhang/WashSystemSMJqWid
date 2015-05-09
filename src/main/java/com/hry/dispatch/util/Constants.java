@@ -71,4 +71,39 @@ public class Constants {
 
 	public static final String EXT_NAME_XLS =".xls";
 	
+
+	public static final int ORI_INDEX_STATION_SCALE = 1;
+	public static final int ORI_INDEX_GROUP_CHUAN_VOLUME = 2;
+	public static final int ORI_INDEX_BEI_RATE = 3;
+	public static final int ORI_INDEX_CAL_INDEX = 4;// 折算系数
+	public static final int ORI_INDEX_ELEC_PRICE = 5;
+	public static final int ORI_INDEX_WASH_PRICE = 6;
+	public static final int ORI_INDEX_FIRST_BLANK_LINE = 7;
+	public static final int ORI_INDEX_SECOND_BLANK_LINE = 9;
+	public static final int ORI_INDEX_FIRST_DATA_LINE = 10;
+
+	public static final int STATIC_INDEX_STATION_NAME = 0;
+	public static final int STATIC_INDEX_STATION_SCALE = 1;
+	public static final int STATIC_INDEX_GROUP_CHUAN_VOLUME = 2;
+	public static final int STATIC_INDEX_START_TIME = 3;
+	public static final int STATIC_INDEX_END_TIME = 4;
+	public static final int STATIC_INDEX_CURRENT_DAY_SHOULD_PRODUCE_ELEC_AMOUT = 5;
+	public static final int STATIC_INDEX_CURRENT_DAY_ACTUAL_PROCUDE_ELEC_AMOUT = 6;
+	public static final int STATIC_INDEX_CURRENT_DAY_LOST_ELEC_AMOUT = 7;
+	public static final int STATIC_INDEX_SUM_LOST_ELEC_AMOUT = 8;
+	public static final int STATIC_INDEX_SUM_LOST_ELEC_AMOUT_PRICE = 9;
+	public static final int STATIC_INDEX_BEST_WASH_PERIOD = 10;
+	public static final int STATIC_INDEX_YEAS_BEST_WASH_PRICE = 11;
+	public static final int STATIC_INDEX_YEAR_BEST_LOST_ELEC_AMOUT_PRICE = 12;
+	public static final int STATIC_INDEX_YEAR_LOWEST_SUM_PRICE = 13;
+	public static final int STATIC_INDEX_SUGGESTED_NEXT_WATH_START_DAY = 14;
+	
+	public static final int DEDUCE_INDEX_START_TIME = 3;
+	public static final int DEDUCE_INDEX_END_TIME = 4;
+	public static final int DEDUCE_INDEX_PLAN_WASH_PERIOD = 12;
+	public static final int DEDUCE_INDEX_YEAR_PLAN_WASH_PRICE = 13;
+	public static final int DEDUCE_INDEX_YEAR_PLAN_LOST_ELEC_PRICE = 14;
+	public static final int DEDUCE_INDEX_YEAR_PLAN_SUM_PRICE = 15;
+	public static final int DEDUCE_INDEX_DEDUCE_PERIOD_LOST_PRICE = 16;
+	
 }

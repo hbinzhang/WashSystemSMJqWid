@@ -11,6 +11,40 @@ var url;
 selectedStation = stationSelectionData[0];
 var source;
 
+var ori_index = {
+		first_valid_time_line : 11
+};
+
+var static_index = {
+		station_name : 0,
+		station_volume : 1,
+		group_chuan_vol : 2,
+		start_time : 3,
+		end_time : 4,
+		best_wash_period : 10,
+		year_best_wash_price : 11,
+		year_best_lost_ele_price : 12,
+		year_lowest_sum_price : 13,
+		line_count : 15
+};
+
+var deduce_index = {
+		station_name : 0,
+		station_volume : 1,
+		group_chuan_vol : 2,
+		start_time : 3,
+		end_time : 4,
+		best_wash_period : 6,
+		year_best_wash_price : 7,
+		year_best_lost_ele_price : 8,
+		year_lowest_sum_price : 9,
+		year_plan : 15,
+		decuce_peroid_lost_price : 16,
+		
+		start_data_line : 12,
+		end_data_line : 16
+};
+
 $(document).ready(function () {
 	var aj = $.ajax( {    
 	    url:'user/getCurrentUser',    
@@ -97,43 +131,48 @@ $(document).ready(function () {
     var setStartTime1 = function() {
     	var destStartDate = DateAddDay(startDate, -1);
     	var tmp = $("#jqxgrid").jqxGrid('getcellvalue', 1, 'item_2');
+    	var chuanVolume = $("#jqxgrid").jqxGrid('getcellvalue', 2, 'item_2');
     	var station_name = $("#jqxgrid").jqxGrid('getcellvalue', 0, 'item_2');
     	
     	$("#staticGrid").jqxGrid('setcellvalue', 0, 'item_2', station_name);
     	$("#staticGrid").jqxGrid('setcellvalue', 1, 'item_2', tmp);
-    	$("#staticGrid").jqxGrid('setcellvalue', 2, 'item_2', destStartDate);
-    	$("#staticGrid").jqxGrid('setcellvalue', 3, 'item_2', endDate);
+    	$("#staticGrid").jqxGrid('setcellvalue', 2, 'item_2', chuanVolume);
+    	$("#staticGrid").jqxGrid('setcellvalue', 3, 'item_2', destStartDate);
+    	$("#staticGrid").jqxGrid('setcellvalue', 4, 'item_2', endDate);
     };
     var setStartTime2 = function() {
-    	var bastPeriodTmp = $("#staticGrid").jqxGrid('getcellvalue', 9, 'item_2');
+    	var bastPeriodTmp = $("#staticGrid").jqxGrid('getcellvalue', static_index.best_wash_period, 'item_2');
     	if (bastPeriodTmp === undefined || bastPeriodTmp == null || bastPeriodTmp.length == 0) {
     		alert("请先在统计计算结果页面完成计算！");
     		return;
     	}
     	
-    	var station_name = $("#jqxgrid").jqxGrid('getcellvalue', 0, 'item_2');
-    	$("#deduceGrid").jqxGrid('setcellvalue', 0, 'item_2', station_name);
+    	var station_name = $("#jqxgrid").jqxGrid('getcellvalue', static_index.station_name, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.station_name, 'item_2', station_name);
     	
-    	var tmp = $("#jqxgrid").jqxGrid('getcellvalue', 1, 'item_2');
-    	$("#deduceGrid").jqxGrid('setcellvalue', 1, 'item_2', tmp);
+    	var tmp = $("#jqxgrid").jqxGrid('getcellvalue', static_index.station_volume, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.station_volume, 'item_2', tmp);
     	
-    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 2, 'item_2');
-    	$("#deduceGrid").jqxGrid('setcellvalue', 2, 'item_2', tmp);
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', static_index.group_chuan_vol, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.group_chuan_vol, 'item_2', tmp);
     	
-    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 3, 'item_2');
-    	$("#deduceGrid").jqxGrid('setcellvalue', 3, 'item_2', tmp);
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', static_index.start_time, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.start_time, 'item_2', tmp);
     	
-    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 9, 'item_2');
-    	$("#deduceGrid").jqxGrid('setcellvalue', 5, 'item_2', tmp);
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', static_index.end_time, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.end_time, 'item_2', tmp);
     	
-    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 10, 'item_2');
-    	$("#deduceGrid").jqxGrid('setcellvalue', 6, 'item_2', tmp);
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', static_index.best_wash_period, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.best_wash_period, 'item_2', tmp);
     	
-    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 11, 'item_2');
-    	$("#deduceGrid").jqxGrid('setcellvalue', 7, 'item_2', tmp);
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', static_index.year_best_wash_price, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.year_best_wash_price, 'item_2', tmp);
     	
-    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 12, 'item_2');
-    	$("#deduceGrid").jqxGrid('setcellvalue', 8, 'item_2', tmp);
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', static_index.year_best_lost_ele_price, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.year_best_lost_ele_price, 'item_2', tmp);
+    	
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', static_index.year_lowest_sum_price, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.year_lowest_sum_price, 'item_2', tmp);
     };
     $('#tabswidget').on('tabclick', function (event) { 
     	var clickedItem = event.args.item;
@@ -218,7 +257,7 @@ $(document).ready(function () {
             };
             var dataAdapter = new $.jqx.dataAdapter(source, {
             	loadComplete: function (data) { 
-                    var dataLine = $('#jqxgrid').jqxGrid('getrowdata', 10);
+                    var dataLine = $('#jqxgrid').jqxGrid('getrowdata', ori_index.first_valid_time_line);
                     startDate = dataLine.item_1;
                     var rows = $('#jqxgrid').jqxGrid('getrows');
                     var lastLine = $('#jqxgrid').jqxGrid('getrowdata', rows.length - 1);
@@ -360,7 +399,7 @@ $(document).ready(function () {
             });
 
             var beginedit = function(row, datafield, columntype) {  
-                if ((row == 2) || (row == 3)) {  
+                if ((row == static_index.start_time) || (row == static_index.end_time)) {  
                     return true;  
                 } else {
                 	return false;
@@ -398,7 +437,7 @@ $(document).ready(function () {
                           return true;
                       },
                       cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
-                    	  if (row == 2 || row == 3) {
+                    	  if (row == static_index.start_time || row == static_index.end_time) {
                           	return '<span style="margin: 2px; float: ' + columnproperties.cellsalign + '; color: #ff0000;">' + defaulthtml + '</span>';
                       	  }
                       }   
@@ -482,11 +521,11 @@ $(document).ready(function () {
                     
                     calcButton.click(function (event) {
                     	var rows = $('#staticGrid').jqxGrid('getboundrows');
-                    	if(rows[2].item_2 == '' || rows[2].item_2 == '--' ) {
+                    	if(rows[static_index.start_time].item_2 == '' || rows[static_index.start_time].item_2 == '--' ) {
                     		alert("请选择起始日期");
                     		return;
                     	}
-                    	if(rows[3].item_2 == '' || rows[3].item_2 == '--' ) {
+                    	if(rows[static_index.end_time].item_2 == '' || rows[static_index.end_time].item_2 == '--' ) {
                     		alert("请选择评价日期");
                     		return;
                     	}
@@ -502,8 +541,8 @@ $(document).ready(function () {
                     	    success:function(data) {
                     	    	if(data.code == '1'){  
                     	    		// update data manually
-                    	    		for (var i = 1; i < 14; i++) {
-                    	    			if (i == 2 || i == 3) {
+                    	    		for (var i = 1; i < static_index.line_count; i++) {
+                    	    			if (i == static_index.start_time || i == static_index.end_time) {
                     	    				continue;
                     	    			}
                     	    			var dd = data.data[i].item_2;
@@ -544,7 +583,7 @@ $(document).ready(function () {
             var dataAdapterDeduce = new $.jqx.dataAdapter(sourceDeduce);
 
             var begineditDeduce = function(row, datafield, columntype) {  
-                if ((row == 2) || (row == 3)) {  
+                if ((row == deduce_index.start_time) || (row == deduce_index.endtime)) {  
                     return true;  
                 } else {
                 	return false;
@@ -635,11 +674,11 @@ $(document).ready(function () {
                 		}
                 		$("#deduceGrid").jqxGrid('setcellvalue', 11, 'item_2', deduceInputVal);
                     	var rows = $('#deduceGrid').jqxGrid('getrows');
-                    	if(rows[2].item_2 == '' || rows[2].item_2 == '--' ) {
+                    	if(rows[static_index.start_time].item_2 == '' || rows[static_index.start_time].item_2 == '--' ) {
                     		alert("请选择起始日期");
                     		return;
                     	}
-                    	if(rows[3].item_2 == '' || rows[3].item_2 == '--' ) {
+                    	if(rows[static_index.end_time].item_2 == '' || rows[static_index.end_time].item_2 == '--' ) {
                     		alert("请选择评价日期");
                     		return;
                     	}
@@ -655,14 +694,14 @@ $(document).ready(function () {
                     	    success:function(data) {
                     	    	if(data.code == '1'){  
                     	    		// update data manually
-                    	    		for (var i = 12; i < 15; i++) {
+                    	    		for (var i = deduce_index.start_data_line; i < deduce_index.end_data_line; i++) {
                     	    			var dd = data.data[i].item_2;
                     	    			$("#deduceGrid").jqxGrid('setcellvalue', i, 'item_2', dd);
                     	    		}
-                    	    		var yearLowest = $("#deduceGrid").jqxGrid('getcellvalue', 8, 'item_2');
-                    	    		var yearPlan = $("#deduceGrid").jqxGrid('getcellvalue', 14, 'item_2');
+                    	    		var yearLowest = $("#deduceGrid").jqxGrid('getcellvalue', deduce_index.year_lowest_sum_price, 'item_2');
+                    	    		var yearPlan = $("#deduceGrid").jqxGrid('getcellvalue', deduce_index.year_plan, 'item_2');
                     	    		var deducePeriodCost = yearPlan - yearLowest;
-                    	    		$("#deduceGrid").jqxGrid('setcellvalue', 15, 'item_2', deducePeriodCost.toFixed(2).toString());
+                    	    		$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.decuce_peroid_lost_price, 'item_2', deducePeriodCost.toFixed(2).toString());
                     	        }else{    
                     	        	alert("计算异常！" + data.message);
                     	        }  
@@ -837,7 +876,7 @@ function calcAllLineServer() {
 	});  
 }
 
-function calcStaticData() {
+//function calcStaticData() {
 //	标杆板评价期首日电量底数  (人工输入)
 //	标杆板评价日电量底数
 //	倍率  (人工输入)
@@ -863,46 +902,46 @@ function calcStaticData() {
 //	清洗周期
 //	全年每日清洗总费用
 //	每天电量损失费用
-	if (calcByDay) {
-		// calc by day
-		var bytimeinputVal = $("#bytimeinput").val();
-		if (bytimeinputVal == null || bytimeinputVal == "" || bytimeinputVal == "请输入参考天数") {
-			alert("请输入参考天数！");
-			return;
-		}
-		var dataLine = $('#jqxgrid').jqxGrid('getrowdata', bytimeinputVal - 1);
-		if (dataLine === undefined || dataLine == null) {
-			alert("请先录入数据！");
-			return;
-		}
-		// calc static data
-		$("#staticGrid").jqxGrid('setcellvalue', 1, 'data', dataLine.sumary);
-		$("#staticGrid").jqxGrid('setcellvalue', 3, 'data', dataLine.date);
-		$("#staticGrid").jqxGrid('setcellvalue', 5, 'data', dataLine.sumary_elec_amout);
-		
-		$("#staticGrid").jqxGrid('setcellvalue', 11, 'data', (Number(getStaticLineData(1)) -  Number(getStaticLineData(0))) * Number(getStaticLineData(2)) /Number(getStaticLineData(3))*5/6 );
-		$("#staticGrid").jqxGrid('setcellvalue', 12, 'data', (Number(getStaticLineData(1)) -  Number(getStaticLineData(0)) - Number(getStaticLineData(5)) -  Number(getStaticLineData(4))) * 2 / (Number(getStaticLineData(3)) + 1) / Number(getStaticLineData(1)));
-		
-		$("#staticGrid").jqxGrid('setcellvalue', 23, 'data', Number(getStaticLineData(8))*Number(getStaticLineData(9)));
-		$("#staticGrid").jqxGrid('setcellvalue', 24, 'data', Number(getStaticLineData(9))*Number(getStaticLineData(10))*Number(getStaticLineData(11))*Number(getStaticLineData(12))/2);
-		
-		$("#staticGrid").jqxGrid('setcellvalue', 13, 'data', getStaticLineData(23));
-		
-		var unitspe = Math.sqrt(Number(getStaticLineData(23))/Number(getStaticLineData(24)));
-		$("#staticGrid").jqxGrid('setcellvalue', 22, 'unit', unitspe);
-		$("#staticGrid").jqxGrid('setcellvalue', 22, 'data', Math.round(unitspe));
-		
-		$("#staticGrid").jqxGrid('setcellvalue', 15, 'data', Number(getStaticLineData(9))/Number(getStaticLineData(13)));
-		$("#staticGrid").jqxGrid('setcellvalue', 16, 'data', Number(getStaticLineData(13))*Number(getStaticLineData(12))*(Number(getStaticLineData(13))+1)/2*Number(getStaticLineData(11)));
-		$("#staticGrid").jqxGrid('setcellvalue', 17, 'data', Number(getStaticLineData(16))*Number(getStaticLineData(15)));
-		$("#staticGrid").jqxGrid('setcellvalue', 18, 'data', Number(getStaticLineData(17))*Number(getStaticLineData(10)));
-		$("#staticGrid").jqxGrid('setcellvalue', 19, 'data', Number(getStaticLineData(8))*Number(getStaticLineData(9))/Number(getStaticLineData(13)));
-		$("#staticGrid").jqxGrid('setcellvalue', 20, 'data', Number(getStaticLineData(18))+Number(getStaticLineData(19)));
-	} else {
-		// reverse calculate. need more specifications
-		
-	}
-}
+//	if (calcByDay) {
+//		// calc by day
+//		var bytimeinputVal = $("#bytimeinput").val();
+//		if (bytimeinputVal == null || bytimeinputVal == "" || bytimeinputVal == "请输入参考天数") {
+//			alert("请输入参考天数！");
+//			return;
+//		}
+//		var dataLine = $('#jqxgrid').jqxGrid('getrowdata', bytimeinputVal - 1);
+//		if (dataLine === undefined || dataLine == null) {
+//			alert("请先录入数据！");
+//			return;
+//		}
+//		// calc static data
+//		$("#staticGrid").jqxGrid('setcellvalue', 1, 'data', dataLine.sumary);
+//		$("#staticGrid").jqxGrid('setcellvalue', 3, 'data', dataLine.date);
+//		$("#staticGrid").jqxGrid('setcellvalue', 5, 'data', dataLine.sumary_elec_amout);
+//		
+//		$("#staticGrid").jqxGrid('setcellvalue', 11, 'data', (Number(getStaticLineData(1)) -  Number(getStaticLineData(0))) * Number(getStaticLineData(2)) /Number(getStaticLineData(3))*5/6 );
+//		$("#staticGrid").jqxGrid('setcellvalue', 12, 'data', (Number(getStaticLineData(1)) -  Number(getStaticLineData(0)) - Number(getStaticLineData(5)) -  Number(getStaticLineData(4))) * 2 / (Number(getStaticLineData(3)) + 1) / Number(getStaticLineData(1)));
+//		
+//		$("#staticGrid").jqxGrid('setcellvalue', 23, 'data', Number(getStaticLineData(8))*Number(getStaticLineData(9)));
+//		$("#staticGrid").jqxGrid('setcellvalue', 24, 'data', Number(getStaticLineData(9))*Number(getStaticLineData(10))*Number(getStaticLineData(11))*Number(getStaticLineData(12))/2);
+//		
+//		$("#staticGrid").jqxGrid('setcellvalue', 13, 'data', getStaticLineData(23));
+//		
+//		var unitspe = Math.sqrt(Number(getStaticLineData(23))/Number(getStaticLineData(24)));
+//		$("#staticGrid").jqxGrid('setcellvalue', 22, 'unit', unitspe);
+//		$("#staticGrid").jqxGrid('setcellvalue', 22, 'data', Math.round(unitspe));
+//		
+//		$("#staticGrid").jqxGrid('setcellvalue', 15, 'data', Number(getStaticLineData(9))/Number(getStaticLineData(13)));
+//		$("#staticGrid").jqxGrid('setcellvalue', 16, 'data', Number(getStaticLineData(13))*Number(getStaticLineData(12))*(Number(getStaticLineData(13))+1)/2*Number(getStaticLineData(11)));
+//		$("#staticGrid").jqxGrid('setcellvalue', 17, 'data', Number(getStaticLineData(16))*Number(getStaticLineData(15)));
+//		$("#staticGrid").jqxGrid('setcellvalue', 18, 'data', Number(getStaticLineData(17))*Number(getStaticLineData(10)));
+//		$("#staticGrid").jqxGrid('setcellvalue', 19, 'data', Number(getStaticLineData(8))*Number(getStaticLineData(9))/Number(getStaticLineData(13)));
+//		$("#staticGrid").jqxGrid('setcellvalue', 20, 'data', Number(getStaticLineData(18))+Number(getStaticLineData(19)));
+//	} else {
+//		// reverse calculate. need more specifications
+//		
+//	}
+//}
 
 function selectStation(obj) {
 	source.url = "./data/getStationData?stationName="+encodeURIComponent(obj.value);
