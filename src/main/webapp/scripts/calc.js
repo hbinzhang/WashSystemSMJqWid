@@ -38,6 +38,7 @@ var deduce_index = {
 		year_best_wash_price : 7,
 		year_best_lost_ele_price : 8,
 		year_lowest_sum_price : 9,
+		plan_wash_period : 12,
 		year_plan : 15,
 		decuce_peroid_lost_price : 16,
 		
@@ -672,7 +673,7 @@ $(document).ready(function () {
                 			alert("请输入假设清洗周期");
                 			return;
                 		}
-                		$("#deduceGrid").jqxGrid('setcellvalue', 11, 'item_2', deduceInputVal);
+                		$("#deduceGrid").jqxGrid('setcellvalue', deduce_index.plan_wash_period, 'item_2', deduceInputVal);
                     	var rows = $('#deduceGrid').jqxGrid('getrows');
                     	if(rows[static_index.start_time].item_2 == '' || rows[static_index.start_time].item_2 == '--' ) {
                     		alert("请选择起始日期");
