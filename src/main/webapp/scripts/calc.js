@@ -245,7 +245,7 @@ $(document).ready(function () {
             	ratio:'',
             	data:'',
             	unit:'',
-            	source:'',
+            	source:'人工输入',
             	comment:'标杆板评价期首日电量底数'
             	},{
             	ratio:'',
@@ -257,7 +257,7 @@ $(document).ready(function () {
             	ratio:'',
             	data:'',
             	unit:'',
-            	source:'',
+            	source:'人工输入',
             	comment:'倍率'
             	},{
             	ratio:'',
@@ -269,7 +269,7 @@ $(document).ready(function () {
             	ratio:'',
             	data:'',
             	unit:'',
-            	source:'',
+            	source:'人工输入',
             	comment:'评价板评价期首日电量底数'
             	},{
             	ratio:'',
@@ -281,7 +281,7 @@ $(document).ready(function () {
             	ratio:'',
             	data:'',
             	unit:'',
-            	source:'',
+            	source:'人工输入',
             	comment:'折算系数'
             	},{
             	ratio:'',
@@ -435,7 +435,7 @@ $(document).ready(function () {
                 columns: [
                   { text: '名称', columntype: 'textbox', editable : false,datafield: 'comment'},
                   { text: '系数', columntype: 'textbox', editable : false,datafield: 'ratio', width: 150 },
-                  { text: '数值', columntype: 'textbox', editable : false,datafield: 'data', width: 150 },
+                  { text: '数值', columntype: 'textbox', datafield: 'data', width: 150 },
                   { text: '单位', columntype: 'textbox', editable : false,datafield: 'unit', width: 170 },
                   { text: '参数来源', columntype: 'textbox', editable : false,datafield: 'source', width: 350 }
                  
@@ -517,6 +517,25 @@ $(document).ready(function () {
                     });
                 },
             });
+            
+//            $("#staticGrid").on('cellendedit', function (event) {
+//            	//console.log("after edit: " + "Event Type: cellendedit, Column: " + event.args.datafield + ", Row: " + (1 + event.args.rowindex) + ", Value: " + event.args.value);
+//            	//console.log("row data is: " + event.args);
+//            	// row's bound index.
+//                var rowBoundIndex = event.args.rowindex;
+//                var dataField = event.args.datafield;
+//                var rowBoundIndex = event.args.rowindex;
+//                var valueSource = $("#staticGrid").jqxGrid('getcellvalue', rowBoundIndex, 'source');
+//                if (valueSource === '人工输入') {
+//                	return;
+//                } else {
+//	                var value = args.value;
+//	                var oldvalue = args.oldvalue;
+//	                args.value = oldvalue;
+//	                alert('该字段不允许人工输入！' + oldvalue);
+//	                $("#staticGrid").jqxGrid('setcellvalue', rowBoundIndex, dataField, oldvalue);
+//                }
+//            });
             
             $("#username").jqxInput({theme: themeConstant, placeHolder: "admin", height: 25, width: 200, minLength: 1});
             $("#displayname").jqxInput({theme: themeConstant, placeHolder: "显示名称", height: 25, width: 200, minLength: 1});
