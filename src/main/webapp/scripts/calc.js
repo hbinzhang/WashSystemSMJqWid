@@ -1,4 +1,5 @@
 var currentuser = "";
+var calcByDay = true;
 
 $(document).ready(function () {
 	var aj = $.ajax( {    
@@ -65,19 +66,19 @@ $(document).ready(function () {
                 datafields:
                 [
                    { name: 'date', type: 'int'},
-				           { name: 'wash_elec_amout', type: 'string'},
-				           { name: 'sumary', type: 'string'},
-				           { name: 'no_wash_elec_amout', type: 'string'},
-				           { name:  'no_wash_elec_sumary', type: 'string'},
-				           { name:  'cal_rate_index_sumary', type: 'string'},
-				           { name:  'cal_rate_index', type: 'string'},
-				           { name:  'cal_rate_sumary', type: 'string'},
-				           { name:  'cal_rate', type: 'string'},
-				           { name:  'no_wash_elec_amout_2', type: 'string'},
-				           { name:  'sumary_elec_amout', type: 'string'},
-				           { name:  'sumary_cal_rate', type: 'string'},
-				           { name:  'reduce_ratio', type: 'string'},
-				           { name:  'lose_sumary', type: 'string'}
+				   { name: 'wash_elec_amout', type: 'string'},
+				   { name: 'sumary', type: 'string'},
+				   { name: 'no_wash_elec_amout', type: 'string'},
+				   { name:  'no_wash_elec_sumary', type: 'string'},
+				   { name:  'cal_rate_index_sumary', type: 'string'},
+				   { name:  'cal_rate_index', type: 'string'},
+				   { name:  'cal_rate_sumary', type: 'string'},
+				   { name:  'cal_rate', type: 'string'},
+				   { name:  'no_wash_elec_amout_2', type: 'string'},
+				   { name:  'sumary_elec_amout', type: 'string'},
+				   { name:  'sumary_cal_rate', type: 'string'},
+				   { name:  'reduce_ratio', type: 'string'},
+				   { name:  'lose_sumary', type: 'string'}
                 ]
             };
 
@@ -446,10 +447,10 @@ $(document).ready(function () {
                 rendertoolbar: function (statusbar) {
                     // appends buttons to the status bar.
                     var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-                    var dropSelMode = $("<div style='float: left; margin-left: 5px;margin-top: 7px;'>按时间计算</div>");
-                    var bytimeinput = $("<div style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='bytimeinput'/></div>");
-                    var dropSelMode2 = $("<div style='float: left; margin-left: 5px;margin-top: 7px;'>按结果反推</div>");
-                    var byresultinput = $("<div style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='byresultinput'/></div>");
+                    var dropSelMode = $("<div id='dropSelMode' style='float: left; margin-left: 5px;margin-top: 7px;'>按时间计算</div>");
+                    var bytimeinput = $("<div id='bytimeinput'  style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='bytimeinput'/></div>");
+                    var dropSelMode2 = $("<div id='dropSelMode2'  style='float: left; margin-left: 5px;margin-top: 7px;'>按结果反推</div>");
+                    var byresultinput = $("<div id='byresultinput'  style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='byresultinput'/></div>");
                     var dlButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowdown.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>下载记录</span></div>");
                     var saveButton = $("<div style='float: left; margin-left: 25px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/search.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>计算结果</span></div>");
                     container.append(dropSelMode);
@@ -472,6 +473,7 @@ $(document).ready(function () {
                         if (checked) {
                         	bytimeinput.jqxInput({disabled: false });
                         	byresultinput.jqxInput({disabled: true });
+                        	calcByDay = true;
                         } else {
                         	
                         }
@@ -481,6 +483,7 @@ $(document).ready(function () {
                         if (checked) {
                         	bytimeinput.jqxInput({disabled: true });
                         	byresultinput.jqxInput({disabled: false });
+                        	calcByDay = false;
                         }
                         else {
                         	
@@ -514,28 +517,17 @@ $(document).ready(function () {
                     
                     saveButton.click(function (event) {
                     	// calc data from records
+                    	calcStaticData();
                     });
                 },
             });
             
-//            $("#staticGrid").on('cellendedit', function (event) {
-//            	//console.log("after edit: " + "Event Type: cellendedit, Column: " + event.args.datafield + ", Row: " + (1 + event.args.rowindex) + ", Value: " + event.args.value);
-//            	//console.log("row data is: " + event.args);
-//            	// row's bound index.
-//                var rowBoundIndex = event.args.rowindex;
-//                var dataField = event.args.datafield;
-//                var rowBoundIndex = event.args.rowindex;
-//                var valueSource = $("#staticGrid").jqxGrid('getcellvalue', rowBoundIndex, 'source');
-//                if (valueSource === '人工输入') {
-//                	return;
-//                } else {
-//	                var value = args.value;
-//	                var oldvalue = args.oldvalue;
-//	                args.value = oldvalue;
-//	                alert('该字段不允许人工输入！' + oldvalue);
-//	                $("#staticGrid").jqxGrid('setcellvalue', rowBoundIndex, dataField, oldvalue);
-//                }
-//            });
+            $("#staticGrid").on('cellbeginedit', function (event) {
+                var rowBoundIndex = event.args.rowindex;
+                if (rowBoundIndex == 0 ||rowBoundIndex == 2 ||rowBoundIndex == 4 ) {
+                	return false;
+                }
+            });
             
             $("#username").jqxInput({theme: themeConstant, placeHolder: "admin", height: 25, width: 200, minLength: 1});
             $("#displayname").jqxInput({theme: themeConstant, placeHolder: "显示名称", height: 25, width: 200, minLength: 1});
@@ -682,4 +674,68 @@ function calcLineData(linenum) {
 	
 	// lose_sumary
 	$("#jqxgrid").jqxGrid('setcellvalue', linenum, 'lose_sumary', (Number(data['sumary']) - Number(data['no_wash_elec_sumary'])) * 50000 / 6 / 10000);
+}
+
+function calcStaticData() {
+//	标杆板评价期首日电量底数  (人工输入)
+//	标杆板评价日电量底数
+//	倍率  (人工输入)
+//	评价发电天数
+//	评价板评价期首日电量底数  (人工输入)
+//	评价板评价日电量底数
+//	折算系数  (人工输入)
+//
+//	单次清洗费用  (人工输入)
+//	费用核算周期  (人工输入)
+//	结算单价（不含税）  (人工输入)
+//	每日平均发电量
+//	不清洗光伏板日降系数
+//	清洗周期
+//
+//	清洗次数
+//	清洗周期损失电量
+//	评价周期损失电量
+//	评价周期损失费用
+//	清洗费用
+//	费用合计
+//
+//	清洗周期
+//	全年每日清洗总费用
+//	每天电量损失费用
+	if (calcByDay) {
+		// calc by day
+		var bytimeinputVal = $("#bytimeinput").val();
+		var dataLine = $('#jqxgrid').jqxGrid('getrowdata', bytimeinputVal - 1);
+		// calc static data
+		$("#staticGrid").jqxGrid('setcellvalue', 1, 'data', dataLine.sumary);
+		$("#staticGrid").jqxGrid('setcellvalue', 3, 'data', dataLine.date);
+		$("#staticGrid").jqxGrid('setcellvalue', 5, 'data', dataLine.sumary_elec_amout);
+		
+		$("#staticGrid").jqxGrid('setcellvalue', 11, 'data', (Number(getStaticLineData(1)) -  Number(getStaticLineData(0))) * Number(getStaticLineData(2)) /Number(getStaticLineData(3))*5/6 );
+		$("#staticGrid").jqxGrid('setcellvalue', 12, 'data', (Number(getStaticLineData(1)) -  Number(getStaticLineData(0)) - Number(getStaticLineData(5)) -  Number(getStaticLineData(4))) * 2 / (Number(getStaticLineData(3)) + 1) / Number(getStaticLineData(1)));
+		
+		$("#staticGrid").jqxGrid('setcellvalue', 15, 'data', Number(getStaticLineData(9))/Number(getStaticLineData(13)));
+		$("#staticGrid").jqxGrid('setcellvalue', 16, 'data', Number(getStaticLineData(13))*Number(getStaticLineData(12))*(Number(getStaticLineData(13))+1)/2*Number(getStaticLineData(11)));
+		$("#staticGrid").jqxGrid('setcellvalue', 17, 'data', Number(getStaticLineData(16))*Number(getStaticLineData(15)));
+		$("#staticGrid").jqxGrid('setcellvalue', 18, 'data', Number(getStaticLineData(17))*Number(getStaticLineData(10)));
+		$("#staticGrid").jqxGrid('setcellvalue', 19, 'data', Number(getStaticLineData(8))*Number(getStaticLineData(9))/Number(getStaticLineData(13)));
+		$("#staticGrid").jqxGrid('setcellvalue', 20, 'data', Number(getStaticLineData(18))+Number(getStaticLineData(19)));
+		
+		$("#staticGrid").jqxGrid('setcellvalue', 23, 'data', Number(getStaticLineData(8))+Number(getStaticLineData(9)));
+		$("#staticGrid").jqxGrid('setcellvalue', 24, 'data', Number(getStaticLineData(9))*Number(getStaticLineData(10))*Number(getStaticLineData(11))*Number(getStaticLineData(12))/2);
+		
+		$("#staticGrid").jqxGrid('setcellvalue', 13, 'data', getStaticLineData(23));
+		
+		var unitspe = Math.sqrt(Number(getStaticLineData(23))/Number(getStaticLineData(24)));
+		$("#staticGrid").jqxGrid('setcellvalue', 22, 'unit', unitspe);
+		$("#staticGrid").jqxGrid('setcellvalue', 22, 'data', Math.round(unitspe));
+	} else {
+		// reverse calculate. need more specifications
+		
+	}
+}
+
+function getStaticLineData(lineInd) {
+	var dataLine = $('#staticGrid').jqxGrid('getrowdata', lineInd);
+	return dataLine.data;
 }
