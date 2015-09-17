@@ -223,6 +223,9 @@ $(document).ready(function () {
                 },
             });
 
+            // calc all line
+            calcAllLine();
+            
             // events
             $("#jqxgrid").on('cellbeginedit', function (event) {
                 //var args = event.args;
@@ -529,14 +532,14 @@ $(document).ready(function () {
                 }
             });
             
-            $("#username").jqxInput({theme: themeConstant, placeHolder: "admin", height: 25, width: 200, minLength: 1});
+            $("#username").jqxInput({theme: themeConstant, value: currentuser, height: 25, width: 200, minLength: 1, editable: false});
             $("#displayname").jqxInput({theme: themeConstant, placeHolder: "显示名称", height: 25, width: 200, minLength: 1});
             $("#pass").jqxInput({theme: themeConstant, placeHolder: "请输入新密码", height: 25, width: 200, minLength: 1});
             $("#passAgain").jqxInput({theme: themeConstant, placeHolder: "请再次输入新密码", height: 25, width: 200, minLength: 1});
             
             $("#modUserInfoSubmit").jqxButton({theme: themeConstant,  width: '50'});
             $("#modUserInfoCancel").jqxButton({theme: themeConstant,  width: '50'});
-                
+             
             $('#window').jqxWindow({
             				theme: themeConstant,
             				isModal: true,
@@ -547,6 +550,34 @@ $(document).ready(function () {
                     }
                 });
             $('#window').jqxWindow('close');
+            
+            $("#modUserInfoSubmit").bind('click', function() {
+            	// check pass
+            	var p1 = $("#pass").val();
+            	var p2 = $("#passAgain").val();
+            	if (p1 == p2) {
+            		var aj = $.ajax( {    
+                	    url:'user/modpass?username=' + currentuser+ '&passsword=' + p1,    
+                	    type:'put',    
+                	    async : false,
+                	    cache:false,    
+                	    success:function(data) {
+                	        alert("修改成功！");
+                	        $('#window').jqxWindow('close');
+                	     },    
+                	     error : function() {
+                	    	 alert("修改失败！");
+                	    	 $('#window').jqxWindow('close');
+                	     }    
+                	});  
+            	} else {
+            		alert("两次输入的密码不一致，请重新输入！");
+            	}
+            });
+            
+            $("#modUserInfoCancel").bind('click', function() {
+            	$('#window').jqxWindow('close');
+            });
             
             $("#logoutSure").jqxButton({theme: themeConstant,  width: '50'});
             $("#logoutCancel").jqxButton({theme: themeConstant,  width: '50'});
@@ -583,7 +614,6 @@ $(document).ready(function () {
             	    	 window.location.href="./index.html";
             	     }    
             	});  
-            	
             });
 //            $('#jqxFileUpload').jqxFileUpload({ 
 //            	width: 300, 
@@ -674,6 +704,14 @@ function calcLineData(linenum) {
 	
 	// lose_sumary
 	$("#jqxgrid").jqxGrid('setcellvalue', linenum, 'lose_sumary', (Number(data['sumary']) - Number(data['no_wash_elec_sumary'])) * 50000 / 6 / 10000);
+}
+
+function calcAllLine() {
+	var rows = $('#jqxgrid').jqxGrid('getrows');
+	var len = rows.length;
+	for (var i = 0; i < len; i++) {
+		calcLineData(i);
+	}
 }
 
 function calcStaticData() {

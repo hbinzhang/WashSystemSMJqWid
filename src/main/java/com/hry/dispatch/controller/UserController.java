@@ -94,5 +94,18 @@ public class UserController {
 			return new Message("-1", "getCurrentUser", "getCurrentUser失败");
 		}
 	}
+	
+	@RequestMapping(value = "/user/modpass")
+	public @ResponseBody Message modpass(@RequestParam("username") String userName,
+			@RequestParam("password") String password, HttpServletRequest request) {
+		try {
+			LOGGER.info("[modpass] username " + userName + "\tpassword "+ password);
+			
+			return new Message("1","modpass success","修改成功");
+		} catch (Exception e) {
+			LOGGER.info("[auth] error ", e);
+			return new Message("-1", "modpass failed", "修改失败");
+		}
+	}
 }
  
