@@ -55,24 +55,58 @@ public class DataController {
 			}
 			model.addAttribute("fileUrl", request.getContextPath() + "/upload/" + fileName);
 			User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+			if (u == null) {
+				LOGGER.info("[upload] user is null");
+				return "calcUpLoadError";
+			}
 			String appBseDir = System.getProperty("app.base.dir");
 	 		String userInfoFile = appBseDir + File.separator + 
 	 				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
 			dataService.uploadExcel(tmpDir + fileName, userInfoFile);
-		return "calc";
+			return "calc";
 		} catch (Exception e) {
 			LOGGER.error("[upload] error", e);
 			return "calcUpLoadError";
 		}
-		
 	}
 
 	@RequestMapping(value = "/data/save", method=RequestMethod.POST, 
 			headers = {"content-type=application/json","content-type=application/xml"})
 	public @ResponseBody Message save(@RequestBody Map<String, ? extends Object> paraMap, HttpServletRequest request) {
-		LOGGER.info("[save] start uname is:" + "\nparaMap is: " + paraMap);
-		User usInSess = (User)request.getAttribute(Constants.SESSION_KEY_USER_INFO);
-		LOGGER.info("[save] usInSess is:" + usInSess);
-		return new Message("1", "b", "c");
+		LOGGER.info("[save] start paraMap is: " + paraMap);
+		// save to user/<username>/calcData.json
+		User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+		if (u == null) {
+			LOGGER.info("[upload] user is null");
+			return new Message("-1", "错误", "未登录，请从新登陆！");
+		}
+		try {
+			dataService.saveJson(paraMap, u.getUserName());
+		} catch (Exception e) {
+			LOGGER.error("[save] save error", e);
+			return new Message("-1", "错误", "服务器异常！");
+		}
+		return new Message("1", "成功", "成功");
 	}
+	
+	@RequestMapping(value = "/data/download", method=RequestMethod.POST, 
+		headers = {"content-type=application/json","content-type=application/xml"})
+	public @ResponseBody Message download(@RequestBody Map<String, ? extends Object> paraMap, HttpServletRequest request) {
+		LOGGER.info("[download] start paraMap is:" + paraMap);
+		// save to user/<username>/calcData.json and user/<username>/calcData.xls
+		User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+		if (u == null) {
+			LOGGER.info("[upload] user is null");
+			return new Message("-1", "错误", "未登录，请从新登陆！");
+		}
+		try {
+			dataService.saveJson(paraMap, u.getUserName());
+			dataService.saveXls(paraMap, u.getUserName());
+		} catch (Exception e) {
+			LOGGER.error("[save] download error", e);
+			return new Message("-1", "错误", "服务器异常！");
+		}
+		return new Message("1", "成功", "成功");
+	}
+	
 }

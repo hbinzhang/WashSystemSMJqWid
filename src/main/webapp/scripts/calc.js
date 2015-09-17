@@ -173,22 +173,24 @@ $(document).ready(function () {
                     });
                     downldButton.click(function (event) {
                         //console.log("start to download");
+                    	var rows = $('#jqxgrid').jqxGrid('getrows');
+                    	var jsonpara = JSON.stringify({"data":rows});
                     	var aj = $.ajax( {    
-                    	    url:'data/get?userid=zhb',// 跳转到 action    
+                    	    url:'data/download',// 跳转到 action    
                     	    type:'get',    
                     	    async : false,
                     	    cache:false,    
+                    	    data: jsonpara,
                     	    dataType:'json',    
                     	    success:function(data) {    
-                    	        if(data.msg =="true" ){    
-                    	            alert("修改成功！");    
-                    	            window.location.href='./data/json/calcData.json'; 
+                    	        if(data.code == '1'){    
+                    	        	window.location.href='./data/user/' + currentuser+ '/calcData.xls';
                     	        }else{    
-                    	            view(data.msg);    
-                    	        }    
+                    	        	alert("下载异常！" + data.message);
+                    	        }  
                     	     },    
                     	     error : function() {    
-                    	          window.location.href='./data/excel/data.xls'; 
+                    	          alert("下载失败！");
                     	     }    
                     	});  
                     	
@@ -206,10 +208,10 @@ $(document).ready(function () {
                     	    dataType:'json',    
                     	    success:function(data) {    
                     	        if(data.code == '1'){    
-                    	            alert("保存成功！");    
+                    	        	alert("保存成功！");
                     	            window.location.reload(); 
-                    	        }else{    
-                    	        	alert("保存异常！");
+                    	        } else {    
+                    	        	alert("保存异常！" + data.message);
                     	        }    
                     	     },    
                     	     error : function() {    
