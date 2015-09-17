@@ -94,7 +94,7 @@ public class DataServiceImpl {
 		objectMapper = new ObjectMapper();
 		String jsonstr = null;
 		// In case of one user handle data on two different terminals at the same time
-		synchronized(DataServiceImpl.class) {
+		synchronized(JsonLock.class) {
 			objectMapper.writeValue(new FileOutputStream(appBseDir + File.separator + 
 					Constants.USER_INFO_DIR + File.separator + uname + File.separator + Constants.FILE_CONTS_CALC_DATA),
 					data);
@@ -146,9 +146,40 @@ public class DataServiceImpl {
 			data.add(one);
 		}
 		// In case of one user handle data on two different terminals at the same time
-		synchronized(DataServiceImpl.class) {
+		synchronized(XlsLock.class) {
 			writeExcel(data, appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + uname + File.separator +
 				Constants.FILE_CONTS_CALC_DATA_XLS);
+		}
+	}
+	
+	public void saveStaticXls(Map<String, ? extends Object> paraMap, String uname) {
+		String appBseDir = System.getProperty("app.base.dir");
+		LOGGER.info("[saveStaticXls] start appBseDir " + appBseDir);
+		List<List<String>> data = new ArrayList<List<String>>();
+		List<String> heads = new ArrayList<String>();
+		heads.add(Constants.EXCEL_CONTS_STATIC_comment);
+		heads.add(Constants.EXCEL_CONTS_STATIC_ratio);
+		heads.add(Constants.EXCEL_CONTS_STATIC_data);
+		heads.add(Constants.EXCEL_CONTS_STATIC_unit);
+		heads.add(Constants.EXCEL_CONTS_STATIC_source);
+		data.add(heads);
+		
+		Collection dataJ = (Collection) paraMap.get("data");
+		Iterator dataIt = dataJ.iterator();
+		while (dataIt.hasNext()) {
+			Map line = (Map)dataIt.next();
+			List<String> one = new ArrayList<String>();
+			one.add(getStr(line, Constants.JSON_CONTS_STATIC_comment));
+			one.add(getStr(line, Constants.JSON_CONTS_STATIC_ratio));
+			one.add(getStr(line, Constants.JSON_CONTS_STATIC_data));
+			one.add(getStr(line, Constants.JSON_CONTS_STATIC_unit));
+			one.add(getStr(line, Constants.JSON_CONTS_STATIC_source));
+			data.add(one);
+		}
+		// In case of one user handle data on two different terminals at the same time
+		synchronized(DataServiceImpl.class) {
+			writeExcel(data, appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + uname + File.separator +
+				Constants.FILE_CONTS_CALC_STATIC_DATA_XLS);
 		}
 	}
 	

@@ -44,6 +44,19 @@ public class Constants {
 	public static final String JSON_CONTS_CALC_reduce_ratio = "reduce_ratio";
 	public static final String JSON_CONTS_CALC_lose_sumary = "lose_sumary"; 
 	
+	public static final String EXCEL_CONTS_STATIC_comment = "名称";
+    public static final String EXCEL_CONTS_STATIC_ratio =  "系数";
+    public static final String EXCEL_CONTS_STATIC_data =  "数值";
+    public static final String EXCEL_CONTS_STATIC_unit =  "单位";
+    public static final String EXCEL_CONTS_STATIC_source =  "参数来源";
+     
+    public static final String JSON_CONTS_STATIC_comment = "comment";
+    public static final String JSON_CONTS_STATIC_ratio = "ratio";
+    public static final String JSON_CONTS_STATIC_data = "data";
+    public static final String JSON_CONTS_STATIC_unit = "unit";
+    public static final String JSON_CONTS_STATIC_source ="source";
+     
 	public static final String FILE_CONTS_CALC_DATA = "calcData.json";
 	public static final String FILE_CONTS_CALC_DATA_XLS = "calcData.xls";
+	public static final String FILE_CONTS_CALC_STATIC_DATA_XLS = "staticResult.xls";
 }

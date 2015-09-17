@@ -77,7 +77,7 @@ public class DataController {
 		// save to user/<username>/calcData.json
 		User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
 		if (u == null) {
-			LOGGER.info("[upload] user is null");
+			LOGGER.info("[save] user is null");
 			return new Message("-1", "错误", "未登录，请从新登陆！");
 		}
 		try {
@@ -86,7 +86,9 @@ public class DataController {
 			LOGGER.error("[save] save error", e);
 			return new Message("-1", "错误", "服务器异常！");
 		}
-		return new Message("1", "成功", "成功");
+		Message ret = new Message("1", "成功", "成功");
+		LOGGER.info("[save] return: " + ret);
+		return ret;
 	}
 	
 	@RequestMapping(value = "/data/download", method=RequestMethod.POST, 
@@ -96,17 +98,40 @@ public class DataController {
 		// save to user/<username>/calcData.json and user/<username>/calcData.xls
 		User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
 		if (u == null) {
-			LOGGER.info("[upload] user is null");
+			LOGGER.info("[download] user is null");
 			return new Message("-1", "错误", "未登录，请从新登陆！");
 		}
 		try {
 			dataService.saveJson(paraMap, u.getUserName());
 			dataService.saveXls(paraMap, u.getUserName());
 		} catch (Exception e) {
-			LOGGER.error("[save] download error", e);
+			LOGGER.error("[download] download error", e);
 			return new Message("-1", "错误", "服务器异常！");
 		}
-		return new Message("1", "成功", "成功");
+		Message ret = new Message("1", "成功", "成功");
+		LOGGER.info("[save] return: " + ret);
+		return ret;
 	}
+	
+	@RequestMapping(value = "/static/download", method=RequestMethod.POST, 
+			headers = {"content-type=application/json","content-type=application/xml"})
+		public @ResponseBody Message staticDownload(@RequestBody Map<String, ? extends Object> paraMap, HttpServletRequest request) {
+			LOGGER.info("[download] start paraMap is:" + paraMap);
+			// save to user/<username>/calcData.json and user/<username>/calcData.xls
+			User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+			if (u == null) {
+				LOGGER.info("[staticDownload] user is null");
+				return new Message("-1", "错误", "未登录，请从新登陆！");
+			}
+			try {
+				dataService.saveStaticXls(paraMap, u.getUserName());
+			} catch (Exception e) {
+				LOGGER.error("[staticDownload] download error", e);
+				return new Message("-1", "错误", "服务器异常！");
+			}
+			Message ret = new Message("1", "成功", "成功");
+			LOGGER.info("[save] return: " + ret);
+			return ret;
+		}
 	
 }

@@ -177,8 +177,9 @@ $(document).ready(function () {
                     	var jsonpara = JSON.stringify({"data":rows});
                     	var aj = $.ajax( {    
                     	    url:'data/download',// 跳转到 action    
-                    	    type:'get',    
+                    	    type:'post',    
                     	    async : false,
+                    	    contentType : 'application/json',
                     	    cache:false,    
                     	    data: jsonpara,
                     	    dataType:'json',    
@@ -193,7 +194,6 @@ $(document).ready(function () {
                     	          alert("下载失败！");
                     	     }    
                     	});  
-                    	
                     });
                     saveButton.click(function (event) {
                     	//console.log("start to save");
@@ -433,11 +433,11 @@ $(document).ready(function () {
                 selectionmode: 'multiplecellsadvanced',
                 columnsresize: true,
                 columns: [
-                  { text: '名称', columntype: 'textbox', datafield: 'comment'},
-                  { text: '系数', columntype: 'textbox', datafield: 'ratio', width: 150 },
-                  { text: '数值', columntype: 'textbox', datafield: 'data', width: 150 },
-                  { text: '单位', columntype: 'textbox', datafield: 'unit', width: 170 },
-                  { text: '参数来源', columntype: 'textbox', datafield: 'source', width: 350 }
+                  { text: '名称', columntype: 'textbox', editable : false,datafield: 'comment'},
+                  { text: '系数', columntype: 'textbox', editable : false,datafield: 'ratio', width: 150 },
+                  { text: '数值', columntype: 'textbox', editable : false,datafield: 'data', width: 150 },
+                  { text: '单位', columntype: 'textbox', editable : false,datafield: 'unit', width: 170 },
+                  { text: '参数来源', columntype: 'textbox', editable : false,datafield: 'source', width: 350 }
                  
                 ],
                 
@@ -446,21 +446,74 @@ $(document).ready(function () {
                 rendertoolbar: function (statusbar) {
                     // appends buttons to the status bar.
                     var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-                    var dropSelMode = $("<div id = 'dropSelMode' style='float: left; margin-left: 5px;margin-top: 2px;'></div>");
+                    var dropSelMode = $("<div style='float: left; margin-left: 5px;margin-top: 7px;'>按时间计算</div>");
+                    var bytimeinput = $("<div style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='bytimeinput'/></div>");
+                    var dropSelMode2 = $("<div style='float: left; margin-left: 5px;margin-top: 7px;'>按结果反推</div>");
+                    var byresultinput = $("<div style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='byresultinput'/></div>");
                     var dlButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowdown.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>下载记录</span></div>");
-                    var saveButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/search.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>保存记录</span></div>");
+                    var saveButton = $("<div style='float: left; margin-left: 25px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/search.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>计算结果</span></div>");
                     container.append(dropSelMode);
-                    container.append(dlButton);
+                    container.append(bytimeinput);
+                    container.append(dropSelMode2);
+                    container.append(byresultinput);
                     container.append(saveButton);
+                    container.append(dlButton);
                     statusbar.append(container);
-                    dropSelMode.jqxDropDownList({autoOpen: true, source: selModeData, selectedIndex: 1, width: '200', height: '25'});
+                    //dropSelMode.jqxDropDownList({autoOpen: true, source: selModeData, selectedIndex: 1, width: '200', height: '25'});
+                    dropSelMode.jqxRadioButton({ theme: themeConstant,width: 100, height: 25, checked: true});
+                    dropSelMode2.jqxRadioButton({theme: themeConstant, width: 100, height: 25, checked: false});
                     dlButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
                     saveButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
+                    bytimeinput.jqxInput({theme: themeConstant,placeHolder: "请输入参考天数", height: 25, width: 100, minLength: 1 });
+                    byresultinput.jqxInput({theme: themeConstant,placeHolder: "请输入参考结果", height: 25, width: 100, minLength: 1,disabled:true });
+                    
+                    dropSelMode.on('change', function (event) {
+                        var checked = event.args.checked;
+                        if (checked) {
+                        	bytimeinput.jqxInput({disabled: false });
+                        	byresultinput.jqxInput({disabled: true });
+                        } else {
+                        	
+                        }
+                    });
+                    dropSelMode2.on('change', function (event) {
+                        var checked = event.args.checked;
+                        if (checked) {
+                        	bytimeinput.jqxInput({disabled: true });
+                        	byresultinput.jqxInput({disabled: false });
+                        }
+                        else {
+                        	
+                        }
+                    });
+                    
                     // reload grid data.
                     dlButton.click(function (event) {
+                    	var rows = $('#staticGrid').jqxGrid('getrows');
+                    	var jsonpara = JSON.stringify({"data":rows});
+                    	var aj = $.ajax( {    
+                    	    url:'static/download',// 跳转到 action    
+                    	    type:'post',    
+                    	    contentType : 'application/json',
+                    	    async : false,
+                    	    cache:false,    
+                    	    data: jsonpara,
+                    	    dataType:'json',    
+                    	    success:function(data) {    
+                    	        if(data.code == '1'){    
+                    	        	window.location.href='./data/user/' + currentuser+ '/staticResult.xls';
+                    	        }else{    
+                    	        	alert("下载异常！" + data.message);
+                    	        }  
+                    	     },    
+                    	     error : function() {    
+                    	          alert("下载失败！");
+                    	     }    
+                    	});  
                     });
                     
                     saveButton.click(function (event) {
+                    	// calc data from records
                     });
                 },
             });
