@@ -1,0 +1,34 @@
+html body {
+	margin : 0px;
+	padding : 0px;
+	height : '100%';
+	
+}
+
+.titleLabelCls {
+	background-color:white;
+	height: 89px;
+}
+
+.logoDivCls {
+	background-color:white;
+	height: 89px;
+	width: 250px;
+}
+
+.rooterCls {
+	background-color:green;
+	height: 60px;
+}
+
+.modUserInfoInputDivCls {
+	margin : 10px;
+	padding-left: 50px;
+}
+
+.lodingDivCLs {
+	width: '100%';
+	padding-top: 300px;
+	text-align:center;
+	height: 1080px;
+}
