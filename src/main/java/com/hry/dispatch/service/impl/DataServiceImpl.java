@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.hry.dispatch.util.Constants;
+import com.hry.dispatch.util.*;
 
 import jxl.Cell;
 import jxl.Sheet;
@@ -89,12 +89,13 @@ public class DataServiceImpl {
 	public void saveJson(Map<String, ? extends Object> paraMap, String uname) 
 			throws BiffException, IOException {
 		Collection data = (Collection) paraMap.get("data");
+		String appBseDir = System.getProperty("app.base.dir");
 		ObjectMapper objectMapper = null;
 		objectMapper = new ObjectMapper();
 		String jsonstr = null;
 		// In case of one user handle data on two different terminals at the same time
 		synchronized(DataServiceImpl.class) {
-			objectMapper.writeValue(new FileOutputStream(
+			objectMapper.writeValue(new FileOutputStream(appBseDir + File.separator + 
 					Constants.USER_INFO_DIR + File.separator + uname + File.separator + Constants.FILE_CONTS_CALC_DATA),
 					data);
 			jsonstr = objectMapper.writeValueAsString(data);
@@ -103,7 +104,8 @@ public class DataServiceImpl {
 	}
 	
 	public void saveXls(Map<String, ? extends Object> paraMap, String uname) {
-		LOGGER.info("[saveXls] start");
+		String appBseDir = System.getProperty("app.base.dir");
+		LOGGER.info("[saveXls] start appBseDir " + appBseDir);
 		List<List<String>> data = new ArrayList<List<String>>();
 		List<String> heads = new ArrayList<String>();
 		heads.add("日期");
@@ -127,27 +129,35 @@ public class DataServiceImpl {
 		while (dataIt.hasNext()) {
 			Map line = (Map)dataIt.next();
 			List<String> one = new ArrayList<String>();
-			one.add(line.get(Constants.JSON_CONTS_DATE).toString());
-			one.add(line.get(Constants.JSON_CONTS_WASH_AMOUT).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_sumary).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_no_wash_elec_amout).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_no_wash_elec_sumary).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_cal_rate_index_sumary).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_INDEX).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_cal_rate_sumary).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_cal_rate).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_no_wash_elec_amout_2).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_sumary_elec_amout).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_sumary_cal_rate).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_reduce_ratio).toString());
-			one.add(line.get(Constants.JSON_CONTS_CALC_lose_sumary).toString());
+			one.add(getStr(line, Constants.JSON_CONTS_DATE));
+			one.add(getStr(line, Constants.JSON_CONTS_WASH_AMOUT));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_sumary));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_no_wash_elec_amout));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_no_wash_elec_sumary));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_cal_rate_index_sumary));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_INDEX));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_cal_rate_sumary));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_cal_rate));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_no_wash_elec_amout_2));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_sumary_elec_amout));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_sumary_cal_rate));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_reduce_ratio));
+			one.add(getStr(line, Constants.JSON_CONTS_CALC_lose_sumary));
 			data.add(one);
 		}
 		// In case of one user handle data on two different terminals at the same time
 		synchronized(DataServiceImpl.class) {
-			writeExcel(data, Constants.USER_INFO_DIR + File.separator + uname + File.separator +
+			writeExcel(data, appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + uname + File.separator +
 				Constants.FILE_CONTS_CALC_DATA_XLS);
 		}
+	}
+	
+	public String getStr(Map pa, String key) {
+		Object o = pa.get(key);
+		if (o == null) {
+			return "";
+		}
+		return o.toString();
 	}
 
 	public static List readExcel(String excelPath) throws BiffException, IOException {

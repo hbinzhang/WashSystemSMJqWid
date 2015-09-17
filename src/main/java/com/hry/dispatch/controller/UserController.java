@@ -51,7 +51,13 @@ public class UserController {
 			if (u == null) {
 				return new Message("-1", "Login failed", "登陆失败");
 			}
-			
+			String appBseDir = System.getProperty("app.base.dir");
+			// create user dir
+			File dir = new File(appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + userName);
+			if (!dir.exists()) {
+				LOGGER.info("[auth] new user create dir: " + Constants.USER_INFO_DIR + File.separator + userName);
+				dir.mkdirs();
+			}
 			request.getSession().setAttribute(Constants.SESSION_KEY_USER_INFO, u);
 			return new Message("1","Login success","登陆成功");
 		} catch (Exception e) {
