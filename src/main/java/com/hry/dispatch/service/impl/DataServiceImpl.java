@@ -246,7 +246,7 @@ public class DataServiceImpl {
 			wwb = Workbook.createWorkbook(os);
 			// 添加第一个工作表并设置第一个Sheet的名字
 			WritableSheet sheet = wwb.createSheet("清洗数据", 0);
-			Label label;
+			
 			
 			// 下面是填充数据
 			int rowNum = 0;
@@ -255,7 +255,7 @@ public class DataServiceImpl {
 				for (String one : line) {
 					// Label(x,y,z) 代表单元格的第x+1列，第y+1行, 内容z
 					// 在Label对象的子对象中指明单元格的位置和内容
-					label = new Label(colNum, rowNum, one);
+					Label label = new Label(colNum, rowNum, one);
 					// 将定义好的单元格添加到工作表中
 					sheet.addCell(label);
 					colNum++;

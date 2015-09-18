@@ -224,7 +224,7 @@ $(document).ready(function () {
             });
 
             // calc all line
-            calcAllLine();
+            //calcAllLine();
             
             // events
             $("#jqxgrid").on('cellbeginedit', function (event) {
@@ -432,7 +432,6 @@ $(document).ready(function () {
                 width: '99%',
                 height: 715,
                 source: dataAdapterSta,
-                editable: true,
                 enabletooltips: true,
                 selectionmode: 'multiplecellsadvanced',
                 columnsresize: true,
@@ -532,7 +531,7 @@ $(document).ready(function () {
                 }
             });
             
-            $("#username").jqxInput({theme: themeConstant, value: currentuser, height: 25, width: 200, minLength: 1, editable: false});
+            $("#username").jqxInput({theme: themeConstant, value: currentuser, height: 25, width: 200, minLength: 1});
             $("#displayname").jqxInput({theme: themeConstant, placeHolder: "显示名称", height: 25, width: 200, minLength: 1});
             $("#pass").jqxInput({theme: themeConstant, placeHolder: "请输入新密码", height: 25, width: 200, minLength: 1});
             $("#passAgain").jqxInput({theme: themeConstant, placeHolder: "请再次输入新密码", height: 25, width: 200, minLength: 1});
