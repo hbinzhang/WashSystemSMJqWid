@@ -2,9 +2,11 @@ package com.hry.dispatch.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class FileInfoReader {
@@ -18,11 +20,13 @@ public class FileInfoReader {
 	public ArrayList<String> readAll() {
 		FileReader fr = null;
 		BufferedReader bufferReader = null;
+		InputStreamReader isr = null;
 		String info = null;
 		ArrayList<String> list = new ArrayList<String>();
 		try {
-			fr = new FileReader(localFile);
-			bufferReader = new BufferedReader(fr);
+//			fr = new FileReader(localFile);
+			isr = new InputStreamReader(new FileInputStream(localFile),"UTF-8");
+			bufferReader = new BufferedReader(isr);
 			while (true) {
 				info = bufferReader.readLine();
 				if (info != null && info.length() > 0) {
@@ -39,7 +43,8 @@ public class FileInfoReader {
 		} finally {
 			try {
 				bufferReader.close();
-				fr.close();
+//				fr.close();
+				isr.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

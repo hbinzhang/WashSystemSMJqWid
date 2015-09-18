@@ -37,16 +37,19 @@ public class DataController {
 			HttpServletRequest request, ModelMap model) {
 		LOGGER.info("[upload] start");
 		try {
-			String fileName = file.getOriginalFilename();
-			String tmpDir = System.getProperty("app.tmp.dir");
-			if (tmpDir == null || tmpDir.length() == 0) {
-				tmpDir = "D:\\";
+			String appBseDir = System.getProperty("app.base.dir");
+			User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+			if (u == null) {
+				LOGGER.info("[upload] user is null");
+				return "calcUpLoadError";
 			}
+			String fileName = file.getOriginalFilename();
+			String tmpDir = appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.TMP_DIR;
 			File targetFile = new File(tmpDir, fileName);
 			// LOGGER.info("[upload] path: " + path);
 			LOGGER.info("[upload] fileName: " + fileName);
-			if (!targetFile.exists()) {
-				targetFile.mkdirs();
+			if (targetFile.exists()) {
+				targetFile.delete();
 			}
 			try {
 				file.transferTo(targetFile);
@@ -54,12 +57,6 @@ public class DataController {
 				e.printStackTrace();
 			}
 			model.addAttribute("fileUrl", request.getContextPath() + "/upload/" + fileName);
-			User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
-			if (u == null) {
-				LOGGER.info("[upload] user is null");
-				return "calcUpLoadError";
-			}
-			String appBseDir = System.getProperty("app.base.dir");
 	 		String userInfoFile = appBseDir + File.separator + 
 	 				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
 			dataService.uploadExcel(tmpDir + fileName, userInfoFile);
@@ -81,7 +78,10 @@ public class DataController {
 			return new Message("-1", "错误", "未登录，请从新登陆！");
 		}
 		try {
-			dataService.saveJson(paraMap, u.getUserName());
+			String appBseDir = System.getProperty("app.base.dir");
+			String userInfoFile = appBseDir + File.separator + 
+	 				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
+			dataService.saveJson(paraMap, userInfoFile);
 		} catch (Exception e) {
 			LOGGER.error("[save] save error", e);
 			return new Message("-1", "错误", "服务器异常！");
@@ -102,7 +102,10 @@ public class DataController {
 			return new Message("-1", "错误", "未登录，请从新登陆！");
 		}
 		try {
-			dataService.saveJson(paraMap, u.getUserName());
+			String appBseDir = System.getProperty("app.base.dir");
+			String userInfoFile = appBseDir + File.separator + 
+	 				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
+			dataService.saveJson(paraMap, userInfoFile);
 			dataService.saveXls(paraMap, u.getUserName());
 		} catch (Exception e) {
 			LOGGER.error("[download] download error", e);

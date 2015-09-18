@@ -8,6 +8,7 @@ public class Constants {
 	public static final String COMPANY_INFO_DIR = "data" + File.separator + "company";
 	public static final String EXCEL_INFO_DIR = "data" + File.separator + "excel";
 	public static final String JSON_INFO_DIR = "data" + File.separator + "json";
+	public static final String TMP_DIR = "tmp";
 	
 	public static final String USER_INFO_FILE = "userinfo.db";
 	public static final String USER_INFO_LOGIN_NAME = "登录名";

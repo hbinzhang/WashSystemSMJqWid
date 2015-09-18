@@ -1,4 +1,7 @@
 var currentuser = "";
+var currentuserDispName = "";
+var currentuserCompName = "";
+var currentuserCompEs = "";
 var calcByDay = true;
 
 $(document).ready(function () {
@@ -7,14 +10,17 @@ $(document).ready(function () {
 	    type:'get',    
 	    async : false,
 	    cache:false,    
-	    dataType:'json',    
+	    dataType:'json',
+	    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
 	    success:function(data) {    
-	        if(data.code == "1" ){ 
-	        	currentuser = data.result;
-	        }else{    
-	        }    
+	    	currentuser = data.userName;
+	    	currentuserDispName = data.displayName;
+	    	currentuserCompName = data.companyName;
+	    	currentuserCompEs = data.companyEs;
+	    	alert(currentuserCompName);
 	     },    
 	     error : function() {
+	    	 //alert(data);
 	     }    
 	});  
 	if (currentuser == "") {
@@ -82,7 +88,12 @@ $(document).ready(function () {
                 ]
             };
 
-            var dataAdapter = new $.jqx.dataAdapter(source);
+            var dataAdapter = new $.jqx.dataAdapter(source, {
+            	loadComplete: function (data) { 
+            		// calc all line
+                    calcAllLine();
+            	}
+            });
 
             // initialize jqxGrid
             $("#jqxgrid").jqxGrid(
@@ -210,7 +221,7 @@ $(document).ready(function () {
                     	    success:function(data) {    
                     	        if(data.code == '1'){    
                     	        	alert("保存成功！");
-                    	            window.location.reload(); 
+                    	            //window.location.reload(); 
                     	        } else {    
                     	        	alert("保存异常！" + data.message);
                     	        }    
@@ -223,9 +234,6 @@ $(document).ready(function () {
                 },
             });
 
-            // calc all line
-            //calcAllLine();
-            
             // events
             $("#jqxgrid").on('cellbeginedit', function (event) {
                 //var args = event.args;
@@ -433,6 +441,7 @@ $(document).ready(function () {
                 height: 715,
                 source: dataAdapterSta,
                 enabletooltips: true,
+                editable : true,
                 selectionmode: 'multiplecellsadvanced',
                 columnsresize: true,
                 columns: [
@@ -526,9 +535,9 @@ $(document).ready(function () {
             
             $("#staticGrid").on('cellbeginedit', function (event) {
                 var rowBoundIndex = event.args.rowindex;
-                if (rowBoundIndex == 0 ||rowBoundIndex == 2 ||rowBoundIndex == 4 ) {
-                	return false;
-                }
+//                if (rowBoundIndex == 0 ||rowBoundIndex == 2 ||rowBoundIndex == 4 ) {
+//                	return false;
+//                }
             });
             
             $("#username").jqxInput({theme: themeConstant, value: currentuser, height: 25, width: 200, minLength: 1});
@@ -592,9 +601,10 @@ $(document).ready(function () {
                 });
             $('#logoutConfirmWin').jqxWindow('close');
             
-            $('#loadingDiv').html("");
-            $('#loadingDiv').hide();
-            
+            if (currentuser != "") {
+	            $('#loadingDiv').html("");
+	            $('#loadingDiv').hide();
+            }
             $('#logoutCancel').bind('click', function(){
             	$('#logoutConfirmWin').jqxWindow('close');
             });
@@ -636,6 +646,7 @@ $(document).ready(function () {
 					initContent: function () {
 					}
             });
+           
             $('#jqxFileUploadWin').jqxWindow('close');
             
             

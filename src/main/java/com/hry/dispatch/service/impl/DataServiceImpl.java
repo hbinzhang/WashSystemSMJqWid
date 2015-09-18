@@ -86,7 +86,7 @@ public class DataServiceImpl {
 		return -1;
 	}
 	
-	public void saveJson(Map<String, ? extends Object> paraMap, String uname) 
+	public void saveJson(Map<String, ? extends Object> paraMap, String path) 
 			throws BiffException, IOException {
 		Collection data = (Collection) paraMap.get("data");
 		String appBseDir = System.getProperty("app.base.dir");
@@ -95,8 +95,7 @@ public class DataServiceImpl {
 		String jsonstr = null;
 		// In case of one user handle data on two different terminals at the same time
 		synchronized(JsonLock.class) {
-			objectMapper.writeValue(new FileOutputStream(appBseDir + File.separator + 
-					Constants.USER_INFO_DIR + File.separator + uname + File.separator + Constants.FILE_CONTS_CALC_DATA),
+			objectMapper.writeValue(new FileOutputStream(path),
 					data);
 			jsonstr = objectMapper.writeValueAsString(data);
 		}

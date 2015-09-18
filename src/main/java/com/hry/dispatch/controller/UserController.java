@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,12 @@ public class UserController {
 				LOGGER.info("[auth] new user create dir: " + Constants.USER_INFO_DIR + File.separator + userName);
 				dir.mkdirs();
 			}
+			String tmpDir = appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + userName + File.separator + Constants.TMP_DIR;
+			File dirt = new File(tmpDir);
+			if (!dirt.exists()) {
+				LOGGER.info("[auth] new user create tmp dir");
+				dirt.mkdirs();
+			}
 			request.getSession().setAttribute(Constants.SESSION_KEY_USER_INFO, u);
 			return new Message("1","Login success","登陆成功");
 		} catch (Exception e) {
@@ -80,18 +87,19 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/user/getCurrentUser")
-	public @ResponseBody Message getCurrentUser(HttpServletRequest request) {
+	public @ResponseBody User getCurrentUser(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			LOGGER.info("[getCurrentUser] start");
 			User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
 			if (u == null) {
-				return new Message("-1","","");
+				return null;
 			}
 			LOGGER.info("[getCurrentUser] return : " + u);
-			return new Message("1",u.getUserName(),"");
+			response.setCharacterEncoding("utf-8");
+			return u;
 		} catch (Exception e) {
 			LOGGER.info("[getCurrentUser] error ", e);
-			return new Message("-1", "getCurrentUser", "getCurrentUser失败");
+			return null;
 		}
 	}
 	

@@ -17,10 +17,6 @@ import com.hry.dispatch.util.FileInfoReader;
  public class UserServiceImpl implements UserServiceI {
  
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
-     /**
-      * ʹ��@Autowiredע���עuserMapper������
-      * ����Ҫʹ��UserMapperʱ��Spring�ͻ��Զ�ע��UserMapper
-      */
 //     @Autowired
 //     private UserMapper userMapper;//ע��dao
  
