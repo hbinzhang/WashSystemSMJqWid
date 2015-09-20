@@ -17,7 +17,6 @@ $(document).ready(function () {
 	    	currentuserDispName = data.displayName;
 	    	currentuserCompName = data.companyName;
 	    	currentuserCompEs = data.companyEs;
-	    	alert(currentuserCompName);
 	     },    
 	     error : function() {
 	    	 //alert(data);
@@ -27,6 +26,7 @@ $(document).ready(function () {
 		alert("未登陆，请从新登陆！");
 		window.location.href="./index.html";
 	}
+	$("#hellolabel").text('您好，' + currentuserDispName);
     //$('#splitContainer').jqxSplitter({ theme: themeConstant, height: 750, width: '100%', disabled: true, orientation: 'horizontal', panels: [{ size: 60 }, { size: 800 }] });
     $('#splitter').jqxSplitter({ splitBarSize: 3, theme: themeConstant, height: 750, width: '100%',  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
     $("#tabswidget").jqxTabs({ theme: themeConstant,  height: '100%', width: '100%' });
@@ -255,7 +255,7 @@ $(document).ready(function () {
             
             var dataSta = [{
             	ratio:'',
-            	data:'',
+            	data:'0',
             	unit:'',
             	source:'人工输入',
             	comment:'标杆板评价期首日电量底数'
@@ -267,7 +267,7 @@ $(document).ready(function () {
             	comment:'标杆板评价日电量底数'
             	},{
             	ratio:'',
-            	data:'',
+            	data:'1',
             	unit:'',
             	source:'人工输入',
             	comment:'倍率'
@@ -279,7 +279,7 @@ $(document).ready(function () {
             	comment:'评价发电天数'
             	},{
             	ratio:'',
-            	data:'',
+            	data:'0',
             	unit:'',
             	source:'人工输入',
             	comment:'评价板评价期首日电量底数'
@@ -291,7 +291,7 @@ $(document).ready(function () {
             	comment:'评价板评价日电量底数'
             	},{
             	ratio:'',
-            	data:'',
+            	data:'1',
             	unit:'',
             	source:'人工输入',
             	comment:'折算系数'
@@ -303,19 +303,19 @@ $(document).ready(function () {
             	comment:''
             	},{
             	ratio:'',
-            	data:'',
+            	data:'5.83',
             	unit:'万元',
             	source:'人工输入',
             	comment:'单次清洗费用'
             	},{
             	ratio:'',
-            	data:'',
-            	unit:'万元',
+            	data:'365',
+            	unit:'天',
             	source:'人工输入',
             	comment:'费用核算周期'
             	},{
             	ratio:'',
-            	data:'',
+            	data:'0.8120',
             	unit:'万元/万Kwh',
             	source:'人工输入',
             	comment:'结算单价（不含税）'
@@ -541,7 +541,7 @@ $(document).ready(function () {
             });
             
             $("#username").jqxInput({theme: themeConstant, value: currentuser, height: 25, width: 200, minLength: 1});
-            $("#displayname").jqxInput({theme: themeConstant, placeHolder: "显示名称", height: 25, width: 200, minLength: 1});
+//            $("#displayname").jqxInput({theme: themeConstant, placeHolder: "显示名称", height: 25, width: 200, minLength: 1});
             $("#pass").jqxInput({theme: themeConstant, placeHolder: "请输入新密码", height: 25, width: 200, minLength: 1});
             $("#passAgain").jqxInput({theme: themeConstant, placeHolder: "请再次输入新密码", height: 25, width: 200, minLength: 1});
             
@@ -565,8 +565,8 @@ $(document).ready(function () {
             	var p2 = $("#passAgain").val();
             	if (p1 == p2) {
             		var aj = $.ajax( {    
-                	    url:'user/modpass?username=' + currentuser+ '&passsword=' + p1,    
-                	    type:'put',    
+                	    url:'user/modpass?username=' + currentuser+ '&password=' + p1 + '&displayname=' + currentuserDispName,    
+                	    type:'post',    
                 	    async : false,
                 	    cache:false,    
                 	    success:function(data) {
@@ -653,6 +653,9 @@ $(document).ready(function () {
 });
 
 function modifyPass() {
+//	$("#displayname").val(currentuserDispName);
+	$("#pass").val('不需要修改密码');
+	$("#passAgain").val('不需要修改密码');
 	$('#window').jqxWindow('open');
 }
 
@@ -753,6 +756,10 @@ function calcStaticData() {
 	if (calcByDay) {
 		// calc by day
 		var bytimeinputVal = $("#bytimeinput").val();
+		if (bytimeinputVal == null || bytimeinputVal == "") {
+			alert("请输入参考日期！");
+			return;
+		}
 		var dataLine = $('#jqxgrid').jqxGrid('getrowdata', bytimeinputVal - 1);
 		// calc static data
 		$("#staticGrid").jqxGrid('setcellvalue', 1, 'data', dataLine.sumary);
@@ -762,14 +769,7 @@ function calcStaticData() {
 		$("#staticGrid").jqxGrid('setcellvalue', 11, 'data', (Number(getStaticLineData(1)) -  Number(getStaticLineData(0))) * Number(getStaticLineData(2)) /Number(getStaticLineData(3))*5/6 );
 		$("#staticGrid").jqxGrid('setcellvalue', 12, 'data', (Number(getStaticLineData(1)) -  Number(getStaticLineData(0)) - Number(getStaticLineData(5)) -  Number(getStaticLineData(4))) * 2 / (Number(getStaticLineData(3)) + 1) / Number(getStaticLineData(1)));
 		
-		$("#staticGrid").jqxGrid('setcellvalue', 15, 'data', Number(getStaticLineData(9))/Number(getStaticLineData(13)));
-		$("#staticGrid").jqxGrid('setcellvalue', 16, 'data', Number(getStaticLineData(13))*Number(getStaticLineData(12))*(Number(getStaticLineData(13))+1)/2*Number(getStaticLineData(11)));
-		$("#staticGrid").jqxGrid('setcellvalue', 17, 'data', Number(getStaticLineData(16))*Number(getStaticLineData(15)));
-		$("#staticGrid").jqxGrid('setcellvalue', 18, 'data', Number(getStaticLineData(17))*Number(getStaticLineData(10)));
-		$("#staticGrid").jqxGrid('setcellvalue', 19, 'data', Number(getStaticLineData(8))*Number(getStaticLineData(9))/Number(getStaticLineData(13)));
-		$("#staticGrid").jqxGrid('setcellvalue', 20, 'data', Number(getStaticLineData(18))+Number(getStaticLineData(19)));
-		
-		$("#staticGrid").jqxGrid('setcellvalue', 23, 'data', Number(getStaticLineData(8))+Number(getStaticLineData(9)));
+		$("#staticGrid").jqxGrid('setcellvalue', 23, 'data', Number(getStaticLineData(8))*Number(getStaticLineData(9)));
 		$("#staticGrid").jqxGrid('setcellvalue', 24, 'data', Number(getStaticLineData(9))*Number(getStaticLineData(10))*Number(getStaticLineData(11))*Number(getStaticLineData(12))/2);
 		
 		$("#staticGrid").jqxGrid('setcellvalue', 13, 'data', getStaticLineData(23));
@@ -777,6 +777,13 @@ function calcStaticData() {
 		var unitspe = Math.sqrt(Number(getStaticLineData(23))/Number(getStaticLineData(24)));
 		$("#staticGrid").jqxGrid('setcellvalue', 22, 'unit', unitspe);
 		$("#staticGrid").jqxGrid('setcellvalue', 22, 'data', Math.round(unitspe));
+		
+		$("#staticGrid").jqxGrid('setcellvalue', 15, 'data', Number(getStaticLineData(9))/Number(getStaticLineData(13)));
+		$("#staticGrid").jqxGrid('setcellvalue', 16, 'data', Number(getStaticLineData(13))*Number(getStaticLineData(12))*(Number(getStaticLineData(13))+1)/2*Number(getStaticLineData(11)));
+		$("#staticGrid").jqxGrid('setcellvalue', 17, 'data', Number(getStaticLineData(16))*Number(getStaticLineData(15)));
+		$("#staticGrid").jqxGrid('setcellvalue', 18, 'data', Number(getStaticLineData(17))*Number(getStaticLineData(10)));
+		$("#staticGrid").jqxGrid('setcellvalue', 19, 'data', Number(getStaticLineData(8))*Number(getStaticLineData(9))/Number(getStaticLineData(13)));
+		$("#staticGrid").jqxGrid('setcellvalue', 20, 'data', Number(getStaticLineData(18))+Number(getStaticLineData(19)));
 	} else {
 		// reverse calculate. need more specifications
 		

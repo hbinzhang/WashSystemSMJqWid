@@ -12,6 +12,7 @@ import com.hry.dispatch.domain.User;
 import com.hry.dispatch.service.UserServiceI;
 import com.hry.dispatch.util.Constants;
 import com.hry.dispatch.util.FileInfoReader;
+import com.hry.dispatch.util.FileInfoWriter;
 
 @Service("userService")
  public class UserServiceImpl implements UserServiceI {
@@ -79,5 +80,39 @@ import com.hry.dispatch.util.FileInfoReader;
  			}
  		}
  		return null;
+     }
+     
+     public void modpass(String userName, String password, String displayname) {
+    	 LOGGER.info("[modpass] username " + userName + "\tpassword "+ password + "\tdisplayname "+ displayname);
+    	 String appBseDir = System.getProperty("app.base.dir");
+  		String userInfoFile = appBseDir + File.separator + 
+  				Constants.USER_INFO_DIR + File.separator + Constants.USER_INFO_FILE;
+  		synchronized (UserServiceImpl.class) {
+  		LOGGER.info("[modpass] userInfoFile " + userInfoFile);
+  		FileInfoReader fis = new FileInfoReader(userInfoFile);
+  		List<String> uInfo = fis.readAll();
+  		Iterator<String> uIt = uInfo.iterator();
+  		String newLine = "";
+  		while(uIt.hasNext()) {
+  			String line = uIt.next();
+  			if (line == null || line.length() == 0) {
+  				continue;
+  			}
+  			String[] infos = line.split(",");
+  			if (infos.length != 5) {
+  				continue;
+  			}
+  			if (infos[0].trim().equals(userName)) {
+  				infos[1] = password;
+//  				infos[2] = displayname;
+  				uIt.remove();
+  				newLine = infos[0].trim() + "," + infos[1].trim() + "," + infos[2].trim() + "," + infos[3].trim() + "," + infos[4].trim();
+  				break;
+  			}
+  		}
+  		uInfo.add(newLine);
+  		FileInfoWriter fiw = new FileInfoWriter(userInfoFile);
+  		fiw.printLstln(uInfo);
+  		}
      }
 }

@@ -24,4 +24,6 @@ public interface UserServiceI {
 	public List<User> getAllUser();
 	
 	public User auth(String userName, String password);
+	
+	public void modpass(String userName, String password, String displayname);
 }

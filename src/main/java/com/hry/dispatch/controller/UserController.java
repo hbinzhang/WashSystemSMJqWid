@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -103,12 +104,12 @@ public class UserController {
 		}
 	}
 	
-	@RequestMapping(value = "/user/modpass")
+	@RequestMapping(value = "/user/modpass", method=RequestMethod.POST)
 	public @ResponseBody Message modpass(@RequestParam("username") String userName,
-			@RequestParam("password") String password, HttpServletRequest request) {
+			@RequestParam("password") String password, @RequestParam("displayname") String displayname, HttpServletRequest request) {
 		try {
-			LOGGER.info("[modpass] username " + userName + "\tpassword "+ password);
-			
+			LOGGER.info("[modpass] username " + userName + "\tpassword "+ password+ "\tdisplayname "+ displayname);
+			userService.modpass(userName, password, displayname);
 			return new Message("1","modpass success","修改成功");
 		} catch (Exception e) {
 			LOGGER.info("[auth] error ", e);
