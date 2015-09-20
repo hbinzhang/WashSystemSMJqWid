@@ -22,13 +22,20 @@ $(document).ready(function () {
 	    	 //alert(data);
 	     }    
 	});  
+	
+	// Modify logo and title
+	var logoUrl = "url('./images/logo/" + currentuserCompEs + ".jpg')";
+	$("#logoDiv").css({"float": "left", "background-image":logoUrl})
+	$("#compNameLabel").html("<font size='6px'>" + currentuserCompName + "光伏板清洗管理系统</font>");
+	$("#rooterCompname").html("<font size='2px' color='#408080'>" + currentuserCompName + "版权所有</font>");
+	
 	if (currentuser == "") {
 		alert("未登陆，请从新登陆！");
 		window.location.href="./index.html";
 	}
 	$("#hellolabel").text('您好，' + currentuserDispName);
     //$('#splitContainer').jqxSplitter({ theme: themeConstant, height: 750, width: '100%', disabled: true, orientation: 'horizontal', panels: [{ size: 60 }, { size: 800 }] });
-    $('#splitter').jqxSplitter({ splitBarSize: 3, theme: themeConstant, height: 750, width: '100%',  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
+    $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: '100%',  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
     $("#tabswidget").jqxTabs({ theme: themeConstant,  height: '100%', width: '100%' });
     
     $("#leftPanel").jqxPanel({theme: themeConstant, width: '100%', height: '100%'});
