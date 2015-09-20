@@ -141,17 +141,20 @@ $(document).ready(function () {
                     var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
                     var addButton = $("<div style='float: left; margin-left: 5px; margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/add.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>添加记录</span></div>");
                     var deleteButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/close.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>删除记录</span></div>");
+                    var autoCalcButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/calendarIcon.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>自动计算</span></div>");
                     var uploadButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowup.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>上传记录</span></div>");
                     var downldButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowdown.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>下载记录</span></div>");
                     var saveButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/search.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>保存记录</span></div>");
                     container.append(addButton);
                     container.append(deleteButton);
+                    container.append(autoCalcButton);
                     container.append(uploadButton);
                     container.append(downldButton);
                     container.append(saveButton);
                     statusbar.append(container);
                     addButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
                     deleteButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
+                    autoCalcButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
                     uploadButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
                     downldButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
                     saveButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
@@ -184,6 +187,9 @@ $(document).ready(function () {
                         }
                         var rows = $("#jqxgrid").jqxGrid('getboundrows');
                         $("#jqxgrid").jqxGrid('deleterow', rows[rowscount-1].uid);
+                    });
+                    autoCalcButton.click(function (event) {
+                    	 calcAllLine();
                     });
                     // reload grid data.
                     uploadButton.click(function (event) {
@@ -242,23 +248,21 @@ $(document).ready(function () {
             });
 
             // events
-            $("#jqxgrid").on('cellbeginedit', function (event) {
+//            $("#jqxgrid").on('cellbeginedit', function (event) {
                 //var args = event.args;
                 //$("#cellbegineditevent").text("Event Type: cellbeginedit, Column: " + args.datafield + ", Row: " + (1 + args.rowindex) + ", Value: " + args.value);
-            });
+//            });
 
-            $("#jqxgrid").on('cellendedit', function (event) {
-            	//console.log("after edit: " + "Event Type: cellendedit, Column: " + event.args.datafield + ", Row: " + (1 + event.args.rowindex) + ", Value: " + event.args.value);
-            	//console.log("row data is: " + event.args);
-            	// row's bound index.
-                var rowBoundIndex = event.args.rowindex;
-                //console.log("rowBoundIndex is: " + rowBoundIndex);
-                var dataField = event.args.datafield;
-                var rowBoundIndex = event.args.rowindex;
-                var value = args.value;
-                $("#jqxgrid").jqxGrid('setcellvalue', rowBoundIndex, dataField, value);  
-                calcLineData(rowBoundIndex);
-            });
+//            $("#jqxgrid").on('cellendedit', function (event) {
+//            	// row's bound index.
+//                var rowBoundIndex = event.args.rowindex;
+//                //console.log("rowBoundIndex is: " + rowBoundIndex);
+//                var dataField = event.args.datafield;
+//                var rowBoundIndex = event.args.rowindex;
+//                var value = args.value;
+//                $("#jqxgrid").jqxGrid('setcellvalue', rowBoundIndex, dataField, value);  
+//                calcLineData(rowBoundIndex);
+//            });
             
             var dataSta = [{
             	ratio:'',
