@@ -12,13 +12,26 @@
 			<param name="LevelMin" value="DEBUG" />
 		</filter>
 	</appender>
+	
+	<appender name="dailyRollingFile"  
+        class="com.hry.dispatch.util.HryRollingAppender">  
+        <param name="File" value="./logs/wash.log" />
+		<param name="Append" value="true" />
+		<param name="DatePattern" value="'.'yyyy-MM-dd" />
+		<param name="LogFileUnCompressDays" value="1" />
+		<param name="LogFileRemainDays" value="30" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss,SSS} [%t] %-5p %c{3} - %m%n%n" />
+		</layout>
+    </appender>   
+
 	<root>
 		<priority value="debug" />
-		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="dailyRollingFile" />
 	</root>
 	
 	<logger name="org.springframework">
 	  <level value="error" />
-	  <appender-ref ref="CONSOLE" />
+	  <appender-ref ref="dailyRollingFile" />
 	 </logger>
 </log4j:configuration>
