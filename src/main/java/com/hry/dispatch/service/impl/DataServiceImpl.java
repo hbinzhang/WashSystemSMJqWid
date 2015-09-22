@@ -299,7 +299,9 @@ public class DataServiceImpl {
 		Cell cell = null;
 
 		// 创建输入流
-		InputStream stream = new FileInputStream(excelPath);
+		InputStream stream = null;
+		try {
+		stream = new FileInputStream(excelPath);
 
 		// 获取Excel文件对象
 		rwb = Workbook.getWorkbook(stream);
@@ -325,6 +327,12 @@ public class DataServiceImpl {
 			list.add(str);
 		}
 		return list;
+		} catch (Exception e) {
+			LOGGER.error("[readExcel] error " + excelPath, e);
+			throw e;
+		} finally {
+			stream.close();
+		}
 		// for (int i = 0; i < list.size(); i++) {
 		// String[] str = (String[]) list.get(i);
 		// for (int j = 0; j < str.length; j++) {
@@ -334,6 +342,7 @@ public class DataServiceImpl {
 	}
 
 	public static void writeExcel(List<List<String>> data, String path) {
+		OutputStream os = null;
 		try {
 			LOGGER.debug("[writeExcel] start");
 			// 获得开始时间
@@ -343,12 +352,10 @@ public class DataServiceImpl {
 			// 创建Excel工作薄
 			WritableWorkbook wwb;
 			// 新建立一个jxl文件,即在d盘下生成testJXL.xls
-			OutputStream os = new FileOutputStream(filePath);
+			os = new FileOutputStream(filePath);
 			wwb = Workbook.createWorkbook(os);
 			// 添加第一个工作表并设置第一个Sheet的名字
 			WritableSheet sheet = wwb.createSheet("清洗数据", 0);
-			
-			
 			// 下面是填充数据
 			int rowNum = 0;
 			for (List<String> line : data) {
@@ -437,6 +444,12 @@ public class DataServiceImpl {
 			LOGGER.debug("[writeExcel] costs: " + (end - start) / 1000);
 		} catch (Exception e) {
 			LOGGER.error("[writeExcel] error", e);
+		} finally {
+			try {
+				os.close();
+			} catch (IOException e) {
+				LOGGER.error("[writeExcel] close error", e);
+			}
 		}
 	}
 

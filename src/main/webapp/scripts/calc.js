@@ -111,6 +111,7 @@ $(document).ready(function () {
 
             var dataAdapter = new $.jqx.dataAdapter(source, {
             	loadComplete: function (data) { 
+            		alert(needloadgriddata);
             		// calc all line
             		if (needloadgriddata) {
             			needloadgriddata = false;
