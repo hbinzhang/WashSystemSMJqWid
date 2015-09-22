@@ -26,6 +26,21 @@ $(document).ready(function () {
             });
             
             $('#loginWinSubmit').bind('click', function(){
+            	loginAct();
+            });
+            
+            $('#loginWinCancel').bind('click', function(){
+            	$("#username").val('');
+            	$("#pass").val('');
+            });
+            
+            $('#pass').keydown(function(e){
+            	if(e.keyCode==13){
+            		loginAct();
+            	}
+            }); 
+            
+            var loginAct = function() {
             	$.ajax({    
         	        type:'get',        
         	        url:'user/userauth?username=' + $('#username').val() + '&password=' + $('#pass').val(),    
@@ -45,12 +60,5 @@ $(document).ready(function () {
         	            alert("登录异常，请检查网络连接或服务器状态！");    
         	       }    
         	    });    
-            });
-            
-            $('#loginWinCancel').bind('click', function(){
-            	$("#username").val('');
-            	$("#pass").val('');
-            });
-            
-            
+            };
 });
