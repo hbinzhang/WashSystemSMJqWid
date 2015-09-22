@@ -27,9 +27,9 @@ $(document).ready(function () {
 	var logoUrl = "url('./images/logo/" + currentuserCompEs + ".png')";
 	var banerUrl = "url('./images/logo/" + currentuserCompEs + "_header.jpg')";
 	var rooterUrl = "url('./images/logo/" + currentuserCompEs + "_rooter.jpg')";
-	$("#logoDiv").css({"float": "left", "background-image":logoUrl, "background-repeat":"no-repeat", "background-position": "center left"});
-	$("#titleLabel").css({"background-image":banerUrl, "background-size":"100% 100%"});
-	$("#rooter").css({"background-image":rooterUrl, "background-size":"100% 100%"});
+	$("#logoDiv").css({"float": "left","background-image":logoUrl, "background-repeat":"no-repeat", "background-position": "center left"});
+	$("#titleLabel").css({ "width":"1200px" ,"background-image":banerUrl, "background-size":"100% 100%"});
+	$("#rooter").css({"width":"1200px","background-image":rooterUrl, "background-size":"100% 100%"});
 	
 	$("#compNameLabel").html("<font size='6px'>" + currentuserCompName + "光伏板清洗管理系统</font>");
 	$("#rooterCompname").html("<font size='2px'>" + currentuserCompName + "版权所有</font>");
@@ -40,10 +40,18 @@ $(document).ready(function () {
 	}
 	$("#hellolabel").text('您好，' + currentuserDispName);
     //$('#splitContainer').jqxSplitter({ theme: themeConstant, height: 750, width: '100%', disabled: true, orientation: 'horizontal', panels: [{ size: 60 }, { size: 800 }] });
-    $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: '100%',  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
+    $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: 1200,  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
     $("#tabswidget").jqxTabs({ theme: themeConstant,  height: '100%', width: '100%' });
     
     $("#leftPanel").jqxPanel({theme: themeConstant, width: '100%', height: '100%'});
+    
+//    $(window).resize(function(){ 
+//    	alert($(window).width());
+//    	alert($("splitContainer").outerWidth());
+//        $("#splitContainer").css( 
+//            "margin-left", ($(window).width() - $("splitContainer").outerWidth())/2
+//        );        
+//    }); 
     
     //$("#titleLabel").jqxDockPanel({ width: '100%', height: 89});
     //$("#titleLabel > div > div").css({ width: '250px' });
@@ -111,7 +119,7 @@ $(document).ready(function () {
             $("#jqxgrid").jqxGrid(
             {
             	theme: themeConstant,
-                width: '99%',
+                width: 1190,
                 height: 715,
                 source: dataAdapter,
                 editable: true,
@@ -480,42 +488,42 @@ $(document).ready(function () {
                     var byresultinput = $("<div id='byresultinput'  style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='byresultinput'/></div>");
                     var dlButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowdown.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>下载记录</span></div>");
                     var saveButton = $("<div style='float: left; margin-left: 25px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/search.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>计算结果</span></div>");
-                    container.append(dropSelMode);
+//                    container.append(dropSelMode);
                     container.append(bytimeinput);
-                    container.append(dropSelMode2);
-                    container.append(byresultinput);
+//                    container.append(dropSelMode2);
+//                    container.append(byresultinput);
                     container.append(saveButton);
                     container.append(dlButton);
                     statusbar.append(container);
                     //dropSelMode.jqxDropDownList({autoOpen: true, source: selModeData, selectedIndex: 1, width: '200', height: '25'});
-                    dropSelMode.jqxRadioButton({ theme: themeConstant,width: 100, height: 25, checked: true});
-                    dropSelMode2.jqxRadioButton({theme: themeConstant, width: 100, height: 25, checked: false});
+//                    dropSelMode.jqxRadioButton({ theme: themeConstant,width: 100, height: 25, checked: true});
+//                    dropSelMode2.jqxRadioButton({theme: themeConstant, width: 100, height: 25, checked: false});
                     dlButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
                     saveButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
                     bytimeinput.jqxInput({theme: themeConstant,placeHolder: "请输入参考天数", height: 25, width: 100, minLength: 1 });
                     byresultinput.jqxInput({theme: themeConstant,placeHolder: "请输入参考结果", height: 25, width: 100, minLength: 1,disabled:true });
                     
-                    dropSelMode.on('change', function (event) {
-                        var checked = event.args.checked;
-                        if (checked) {
-                        	bytimeinput.jqxInput({disabled: false });
-                        	byresultinput.jqxInput({disabled: true });
-                        	calcByDay = true;
-                        } else {
-                        	
-                        }
-                    });
-                    dropSelMode2.on('change', function (event) {
-                        var checked = event.args.checked;
-                        if (checked) {
-                        	bytimeinput.jqxInput({disabled: true });
-                        	byresultinput.jqxInput({disabled: false });
-                        	calcByDay = false;
-                        }
-                        else {
-                        	
-                        }
-                    });
+//                    dropSelMode.on('change', function (event) {
+//                        var checked = event.args.checked;
+//                        if (checked) {
+//                        	bytimeinput.jqxInput({disabled: false });
+//                        	byresultinput.jqxInput({disabled: true });
+//                        	calcByDay = true;
+//                        } else {
+//                        	
+//                        }
+//                    });
+//                    dropSelMode2.on('change', function (event) {
+//                        var checked = event.args.checked;
+//                        if (checked) {
+//                        	bytimeinput.jqxInput({disabled: true });
+//                        	byresultinput.jqxInput({disabled: false });
+//                        	calcByDay = false;
+//                        }
+//                        else {
+//                        	
+//                        }
+//                    });
                     
                     // reload grid data.
                     dlButton.click(function (event) {
@@ -772,11 +780,15 @@ function calcStaticData() {
 	if (calcByDay) {
 		// calc by day
 		var bytimeinputVal = $("#bytimeinput").val();
-		if (bytimeinputVal == null || bytimeinputVal == "") {
-			alert("请输入参考日期！");
+		if (bytimeinputVal == null || bytimeinputVal == "" || bytimeinputVal == "请输入参考天数") {
+			alert("请输入参考天数！");
 			return;
 		}
 		var dataLine = $('#jqxgrid').jqxGrid('getrowdata', bytimeinputVal - 1);
+		if (dataLine === undefined || dataLine == null) {
+			alert("请先录入数据！");
+			return;
+		}
 		// calc static data
 		$("#staticGrid").jqxGrid('setcellvalue', 1, 'data', dataLine.sumary);
 		$("#staticGrid").jqxGrid('setcellvalue', 3, 'data', dataLine.date);
