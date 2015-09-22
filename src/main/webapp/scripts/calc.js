@@ -111,7 +111,7 @@ $(document).ready(function () {
 
             var dataAdapter = new $.jqx.dataAdapter(source, {
             	loadComplete: function (data) { 
-            		alert(needloadgriddata);
+//            		alert(needloadgriddata);
             		// calc all line
             		if (needloadgriddata) {
             			needloadgriddata = false;
@@ -207,7 +207,7 @@ $(document).ready(function () {
                         $("#jqxgrid").jqxGrid('deleterow', rows[rowscount-1].uid);
                     });
                     autoCalcButton.click(function (event) {
-                    	calcAllLineServer();
+//                    	calcAllLineServer();
                     });
                     // reload grid data.
                     uploadButton.click(function (event) {
@@ -677,6 +677,21 @@ $(document).ready(function () {
             });
            
             $('#jqxFileUploadWin').jqxWindow('close');
+            
+            $('#uploadCancelBtn').bind('click', function(){
+            	$('#jqxFileUploadWin').jqxWindow('close');
+            });
+            
+            $('#uploadSureBtn').bind('click', function(){
+            	var fuv = $("#uploadFileName").val();
+            	if (fuv == null || fuv == "") {
+            		alert("请选择文件");
+            	} else {
+            		$('#jqxFileUploadWin').jqxWindow('close');
+            		$("#uploadForm").submit();
+            	}
+            });
+        	
             
             
 });

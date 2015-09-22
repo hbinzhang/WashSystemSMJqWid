@@ -181,11 +181,11 @@
                 </div>
     	<div style="overflow: hidden; padding-top:30px; text-align:center;" id="windowContent">
                   <div id="jqxFileUpload">
-                  	<form action="data/fileupload" method="post" enctype="multipart/form-data">
-					  文件名: <input type="file" name="fname"/>
+                  	<form id="uploadForm" action="data/fileupload" method="post" enctype="multipart/form-data">
+					  文件名: <input id="uploadFileName" type="file" name="fname"/>
 					  <div id="jqxFileUploadBtns"  style="margin-top:20px;">
-					  <input type="submit" value="确定" />
-					  <input type="button" value="取消" />
+					  <input id="uploadSureBtn" type="button" value="确定" />
+					  <input id="uploadCancelBtn" type="button" value="取消" />
 					  </div>
 					</form>
     				</div>

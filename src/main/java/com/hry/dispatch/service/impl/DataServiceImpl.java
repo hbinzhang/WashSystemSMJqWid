@@ -96,9 +96,16 @@ public class DataServiceImpl {
 		String jsonstr = null;
 		// In case of one user handle data on two different terminals at the same time
 		synchronized(JsonLock.class) {
-			objectMapper.writeValue(new FileOutputStream(path),
+			FileOutputStream fos = new FileOutputStream(path);
+			try {
+			objectMapper.writeValue(fos,
 					data);
 			jsonstr = objectMapper.writeValueAsString(data);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}finally {
+				fos.close();
+			}
 		}
 		LOGGER.debug("[saveJson] write json end: " + jsonstr);
 	}
