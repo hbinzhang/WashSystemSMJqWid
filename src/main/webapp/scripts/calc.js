@@ -43,10 +43,11 @@ $(document).ready(function () {
 //	if (currentuserCompEs == "nfdw") {
 //		themeConstant = "darkblue";
 //	}
-	$("#hellolabel").text('您好，' + currentuserDispName);
+//	$("#hellolabel").text('您好，' + currentuserDispName);
+	$("#hellolabel").text('');
     //$('#splitContainer').jqxSplitter({ theme: themeConstant, height: 750, width: '100%', disabled: true, orientation: 'horizontal', panels: [{ size: 60 }, { size: 800 }] });
     $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: 1200,  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
-    $("#tabswidget").jqxTabs({ theme: themeConstant,  height: '100%', width: '100%' });
+    $("#tabswidget").jqxTabs({ theme: themeConstant,  height: '100%', width: '100%', animationType: 'fade' });
     
     $("#leftPanel").jqxPanel({theme: themeConstant, width: '100%', height: '100%'});
     
