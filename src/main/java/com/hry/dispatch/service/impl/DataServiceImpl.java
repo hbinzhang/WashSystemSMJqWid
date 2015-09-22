@@ -72,7 +72,8 @@ public class DataServiceImpl {
 		// change to json and write to file
 		Map paraMap = new HashMap();
 		paraMap.put("data", jsonObj);
-		saveJson(paraMap, outputJsonPath, username);
+		Map retParaMap = calcAllLine(paraMap);
+		saveJson(retParaMap, outputJsonPath, username);
         LOGGER.info("[uploadExcel] write json end");
 	}
 	
