@@ -24,10 +24,15 @@ $(document).ready(function () {
 	});  
 	
 	// Modify logo and title
-	var logoUrl = "url('./images/logo/" + currentuserCompEs + ".jpg')";
-	$("#logoDiv").css({"float": "left", "background-image":logoUrl})
+	var logoUrl = "url('./images/logo/" + currentuserCompEs + ".png')";
+	var banerUrl = "url('./images/logo/" + currentuserCompEs + "_header.jpg')";
+	var rooterUrl = "url('./images/logo/" + currentuserCompEs + "_rooter.jpg')";
+	$("#logoDiv").css({"float": "left", "background-image":logoUrl, "background-repeat":"no-repeat", "background-position": "center left"});
+	$("#titleLabel").css({"background-image":banerUrl, "background-size":"100% 100%"});
+	$("#rooter").css({"background-image":rooterUrl, "background-size":"100% 100%"});
+	
 	$("#compNameLabel").html("<font size='6px'>" + currentuserCompName + "光伏板清洗管理系统</font>");
-	$("#rooterCompname").html("<font size='2px' color='#408080'>" + currentuserCompName + "版权所有</font>");
+	$("#rooterCompname").html("<font size='2px'>" + currentuserCompName + "版权所有</font>");
 	
 	if (currentuser == "") {
 		alert("未登陆，请从新登陆！");
