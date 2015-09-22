@@ -32,13 +32,17 @@ $(document).ready(function () {
 	$("#titleLabel").css({ "width":"1200px" ,"background-image":banerUrl, "background-size":"100% 100%"});
 	$("#rooter").css({"width":"1200px","background-image":rooterUrl, "background-size":"100% 100%"});
 	
-	$("#compNameLabel").html("<font size='6px'>" + currentuserCompName + "光伏板清洗管理系统</font>");
+	//$("#compNameLabel").html("<font size='6px'>" + currentuserCompName + "光伏板清洗管理系统</font>");
+	$("#compNameLabel").html("");
 	$("#rooterCompname").html("<font size='2px'>" + currentuserCompName + "版权所有</font>");
 	
 	if (currentuser == "") {
 		alert("未登陆，请从新登陆！");
 		window.location.href="./index.html";
 	}
+//	if (currentuserCompEs == "nfdw") {
+//		themeConstant = "darkblue";
+//	}
 	$("#hellolabel").text('您好，' + currentuserDispName);
     //$('#splitContainer').jqxSplitter({ theme: themeConstant, height: 750, width: '100%', disabled: true, orientation: 'horizontal', panels: [{ size: 60 }, { size: 800 }] });
     $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: 1200,  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
