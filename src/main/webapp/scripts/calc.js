@@ -40,7 +40,7 @@ $(document).ready(function () {
 		alert("未登陆，请从新登陆！");
 		window.location.href="./index.html";
 	}
-//	if (currentuserCompEs == "nfdw") {
+//	if (currentuserCompEs == "nfdw"){
 //		themeConstant = "darkblue";
 //	}
 //	$("#hellolabel").text('您好，' + currentuserDispName);
@@ -120,7 +120,7 @@ $(document).ready(function () {
             		// calc all line
             		if (needloadgriddata) {
             			needloadgriddata = false;
-            			calcAllLineServer();
+//            			calcAllLineServer();
             		}
             	}
             });
@@ -212,7 +212,7 @@ $(document).ready(function () {
                         $("#jqxgrid").jqxGrid('deleterow', rows[rowscount-1].uid);
                     });
                     autoCalcButton.click(function (event) {
-//                    	calcAllLineServer();
+                    	calcAllLineServer();
                     });
                     // reload grid data.
                     uploadButton.click(function (event) {
