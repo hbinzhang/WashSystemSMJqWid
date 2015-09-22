@@ -13,6 +13,7 @@ import com.hry.dispatch.service.UserServiceI;
 import com.hry.dispatch.util.Constants;
 import com.hry.dispatch.util.FileInfoReader;
 import com.hry.dispatch.util.FileInfoWriter;
+import com.hry.dispatch.util.LockCache;
 
 @Service("userService")
  public class UserServiceImpl implements UserServiceI {
@@ -73,6 +74,7 @@ import com.hry.dispatch.util.FileInfoWriter;
  					if (!dir.exists()) {
  						dir.mkdirs();
  					}
+ 					LockCache.addOne(userName);
  					// construct User object and return
  					return new User("", infos[0].trim(),infos[1].trim(),infos[2].trim()
  							,infos[3].trim(),infos[4].trim());

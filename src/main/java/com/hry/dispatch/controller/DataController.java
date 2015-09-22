@@ -60,7 +60,7 @@ public class DataController {
 			model.addAttribute("fileUrl", request.getContextPath() + "/upload/" + fileName);
 	 		String userInfoFile = appBseDir + File.separator + 
 	 				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
-			dataService.uploadExcel(tmpDir + File.separator + fileName, userInfoFile);
+			dataService.uploadExcel(tmpDir + File.separator + fileName, userInfoFile, u.getUserName());
 			return "calc";
 		} catch (Exception e) {
 			LOGGER.error("[upload] error", e);
@@ -82,7 +82,7 @@ public class DataController {
 			String appBseDir = System.getProperty("app.base.dir");
 			String userInfoFile = appBseDir + File.separator + 
 	 				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
-			dataService.saveJson(paraMap, userInfoFile);
+			dataService.saveJson(paraMap, userInfoFile, u.getUserName());
 		} catch (Exception e) {
 			LOGGER.error("[save] save error", e);
 			return new Message("-1", "错误", "服务器异常！");
@@ -108,7 +108,7 @@ public class DataController {
 		String appBseDir = System.getProperty("app.base.dir");
 		String userInfoFile = appBseDir + File.separator + 
  				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
-		dataService.saveJson(ret, userInfoFile);
+		dataService.saveJson(ret, userInfoFile,u.getUserName());
 		} catch (Exception e) {
 				LOGGER.error("[calcAllLine] save error", e);
 				return new Message("-1", "错误", "服务器异常！");
@@ -131,7 +131,7 @@ public class DataController {
 			String appBseDir = System.getProperty("app.base.dir");
 			String userInfoFile = appBseDir + File.separator + 
 	 				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
-			dataService.saveJson(paraMap, userInfoFile);
+			dataService.saveJson(paraMap, userInfoFile,u.getUserName());
 			dataService.saveXls(paraMap, u.getUserName());
 		} catch (Exception e) {
 			LOGGER.error("[download] download error", e);

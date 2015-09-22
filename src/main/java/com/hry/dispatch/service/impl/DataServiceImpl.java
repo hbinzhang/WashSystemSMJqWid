@@ -40,7 +40,8 @@ public class DataServiceImpl {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataServiceImpl.class);
 
-	public void uploadExcel(String excelPath, String outputJsonPath) throws BiffException, IOException {
+	public void uploadExcel(String excelPath, String outputJsonPath, String username) 
+			throws BiffException, IOException , Exception {
 		LOGGER.info("[uploadExcel] excelPath is: " + excelPath + " outputJsonPath is: " + outputJsonPath);
 		List list = readExcel(excelPath);
 		if (list == null || list.size() == 0) {
@@ -71,7 +72,7 @@ public class DataServiceImpl {
 		// change to json and write to file
 		Map paraMap = new HashMap();
 		paraMap.put("data", jsonObj);
-		saveJson(paraMap, outputJsonPath);
+		saveJson(paraMap, outputJsonPath, username);
         LOGGER.info("[uploadExcel] write json end");
 	}
 	
@@ -87,15 +88,16 @@ public class DataServiceImpl {
 		return -1;
 	}
 	
-	public void saveJson(Map<String, ? extends Object> paraMap, String path) 
-			throws BiffException, IOException {
+	public void saveJson(Map<String, ? extends Object> paraMap, String path, String username) 
+			throws BiffException, IOException, Exception {
 		Collection data = (Collection) paraMap.get("data");
 		String appBseDir = System.getProperty("app.base.dir");
 		ObjectMapper objectMapper = null;
 		objectMapper = new ObjectMapper();
 		String jsonstr = null;
 		// In case of one user handle data on two different terminals at the same time
-		synchronized(JsonLock.class) {
+		Lock l = LockCache.acquire(username);
+		synchronized(l) {
 			FileOutputStream fos = new FileOutputStream(path);
 			try {
 			objectMapper.writeValue(fos,
@@ -211,7 +213,7 @@ public class DataServiceImpl {
 		}
 	}
 	
-	public void saveXls(Map<String, ? extends Object> paraMap, String uname) {
+	public void saveXls(Map<String, ? extends Object> paraMap, String uname) throws Exception {
 		String appBseDir = System.getProperty("app.base.dir");
 		LOGGER.info("[saveXls] start appBseDir " + appBseDir);
 		List<List<String>> data = new ArrayList<List<String>>();
@@ -254,13 +256,15 @@ public class DataServiceImpl {
 			data.add(one);
 		}
 		// In case of one user handle data on two different terminals at the same time
-		synchronized(XlsLock.class) {
+		Lock l = LockCache.acquire(uname);
+		synchronized(l) {
 			writeExcel(data, appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + uname + File.separator +
 				Constants.FILE_CONTS_CALC_DATA_XLS);
 		}
 	}
 	
-	public void saveStaticXls(Map<String, ? extends Object> paraMap, String uname) {
+	public void saveStaticXls(Map<String, ? extends Object> paraMap, String uname)
+	throws Exception {
 		String appBseDir = System.getProperty("app.base.dir");
 		LOGGER.info("[saveStaticXls] start appBseDir " + appBseDir);
 		List<List<String>> data = new ArrayList<List<String>>();
@@ -285,7 +289,8 @@ public class DataServiceImpl {
 			data.add(one);
 		}
 		// In case of one user handle data on two different terminals at the same time
-		synchronized(DataServiceImpl.class) {
+		Lock l = LockCache.acquire(uname);
+		synchronized(l) {
 			writeExcel(data, appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + uname + File.separator +
 				Constants.FILE_CONTS_CALC_STATIC_DATA_XLS);
 		}
