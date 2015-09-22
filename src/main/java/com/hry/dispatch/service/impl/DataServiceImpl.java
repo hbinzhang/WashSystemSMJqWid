@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.hry.dispatch.domain.Message;
 import com.hry.dispatch.util.*;
 
 import jxl.Cell;
@@ -100,6 +101,107 @@ public class DataServiceImpl {
 			jsonstr = objectMapper.writeValueAsString(data);
 		}
 		LOGGER.debug("[saveJson] write json end: " + jsonstr);
+	}
+	
+	public Map calcAllLine(Map<String, ? extends Object> paraMap) {
+		List data = (List) paraMap.get("data");
+		LOGGER.debug("[calcAllLine] data: " + data);
+		Map ret = new HashMap();
+		List dataList = new ArrayList();
+		if (data == null || data.size() == 0) {
+			ret.put("message", new Message("-1", "错误", "数据为空！"));
+			return ret;
+		}
+		int len = data.size();
+		for (int i = 0; i < len; i++) {
+			Map calcResult = new HashMap();
+			Map line = null;
+			Map lastRec = null;
+			if (i > 0) {
+				lastRec = (Map)data.get(i - 1);
+			}
+			line = (Map)data.get(i);
+			String value = null;
+			calcResult.put("date", String.valueOf((getDoubleFromMap(line, "date"))));
+			calcResult.put("wash_elec_amout", String.valueOf((getDoubleFromMap(line, "wash_elec_amout"))));
+			calcResult.put("cal_rate_index", String.valueOf((getDoubleFromMap(line, "cal_rate_index"))));
+			// sumary
+			if (lastRec != null) {
+				value = String.valueOf((getDoubleFromMap(line, "wash_elec_amout") + getDoubleFromMap(lastRec, "sumary")));
+				calcResult.put("sumary", value);
+				line.put("sumary", value);
+			} else {
+				value = String.valueOf(getDoubleFromMap(line, "wash_elec_amout"));
+				calcResult.put("sumary", value);  
+				line.put("sumary", value);
+			}
+			
+			// cal_rate_index_sumary
+			value = String.valueOf(Math.pow(getDoubleFromMap(line, "cal_rate_index"), getDoubleFromMap(line, "date")));
+			calcResult.put("cal_rate_index_sumary", value);  
+			line.put("cal_rate_index_sumary", value);
+			// no_wash_elec_amout
+			value = String.valueOf(getDoubleFromMap(line, "wash_elec_amout") * getDoubleFromMap(line, "cal_rate_index_sumary"));
+			calcResult.put("no_wash_elec_amout", value);  
+			line.put("no_wash_elec_amout", value);
+			// no_wash_elec_sumary
+			if (lastRec != null) {
+				value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout") + getDoubleFromMap(lastRec, "no_wash_elec_sumary"));
+			 	calcResult.put("no_wash_elec_sumary", value);
+			 	line.put("no_wash_elec_sumary", String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout") + getDoubleFromMap(lastRec, "no_wash_elec_sumary")));
+			} else {
+				value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout"));
+				calcResult.put("no_wash_elec_sumary", value);
+				line.put("no_wash_elec_sumary", value);
+			}
+			
+			// cal_rate_sumary
+			value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_sumary") / getDoubleFromMap(line, "sumary"));
+			calcResult.put("cal_rate_sumary", value);
+			line.put("cal_rate_sumary", value);
+			// cal_rate
+			value = String.valueOf(1 - getDoubleFromMap(line, "date") * 0.0004);
+			calcResult.put("cal_rate", value);
+			line.put("cal_rate", value);
+			// no_wash_elec_amout_2
+			value = String.valueOf(getDoubleFromMap(line, "cal_rate") * getDoubleFromMap(line, "wash_elec_amout"));
+			calcResult.put("no_wash_elec_amout_2", value);
+			line.put("no_wash_elec_amout_2", value);
+			// sumary_elec_amout
+			if (lastRec != null) {
+				value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout_2") + getDoubleFromMap(lastRec, "sumary_elec_amout"));
+			 	calcResult.put("sumary_elec_amout", value);
+			 	line.put("sumary_elec_amout", String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout_2") + getDoubleFromMap(lastRec, "sumary_elec_amout")));
+			} else {
+				value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout_2"));
+				calcResult.put("sumary_elec_amout", value);
+				line.put("sumary_elec_amout", value);
+			}
+			
+			// sumary_cal_rate
+			value = String.valueOf(getDoubleFromMap(line, "sumary_elec_amout") / getDoubleFromMap(line, "sumary"));
+			calcResult.put("sumary_cal_rate", value);
+			line.put("sumary_cal_rate", value);
+			// reduce_ratio
+			value = String.valueOf((getDoubleFromMap(line, "sumary") - getDoubleFromMap(line, "sumary_elec_amout")) * 2 / getDoubleFromMap(line, "sumary") / (getDoubleFromMap(line, "date") + 1));
+			calcResult.put("reduce_ratio", value);
+			line.put("reduce_ratio", value);
+			// lose_sumary
+			value = String.valueOf(getDoubleFromMap(line, "sumary") - getDoubleFromMap(line, "no_wash_elec_sumary") * 50000 / 6 / 10000);
+			calcResult.put("lose_sumary", value);
+			line.put("lose_sumary", value);
+			dataList.add(calcResult);
+		}
+		ret.put("data", dataList);
+		return ret;
+	}
+	
+	public double getDoubleFromMap(Map map, String key) {
+		if (map.containsKey(key)) {
+			return Double.parseDouble(map.get(key).toString());
+		} else {
+			return 0.0;
+		}
 	}
 	
 	public void saveXls(Map<String, ? extends Object> paraMap, String uname) {

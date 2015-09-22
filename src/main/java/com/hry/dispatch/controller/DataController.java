@@ -1,6 +1,7 @@
 package com.hry.dispatch.controller;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +60,7 @@ public class DataController {
 			model.addAttribute("fileUrl", request.getContextPath() + "/upload/" + fileName);
 	 		String userInfoFile = appBseDir + File.separator + 
 	 				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
-			dataService.uploadExcel(tmpDir + fileName, userInfoFile);
+			dataService.uploadExcel(tmpDir + File.separator + fileName, userInfoFile);
 			return "calc";
 		} catch (Exception e) {
 			LOGGER.error("[upload] error", e);
@@ -89,6 +90,31 @@ public class DataController {
 		Message ret = new Message("1", "成功", "成功");
 		LOGGER.info("[save] return: " + ret);
 		return ret;
+	}
+	
+	@RequestMapping(value = "/data/calcAllLine", method=RequestMethod.POST, 
+			headers = {"content-type=application/json","content-type=application/xml"})
+	public @ResponseBody Message calcAllLine(@RequestBody Map<String, ? extends Object> paraMap, HttpServletRequest request) {
+		LOGGER.info("[save] start paraMap is: " + paraMap);
+		// save to user/<username>/calcData.json
+		User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+		Map ret = new HashMap();
+		if (u == null) {
+			LOGGER.info("[calcAllLine] user is null");
+			return new Message("-1", "错误", "用户未登陆！");
+		}
+		try {
+		ret = dataService.calcAllLine(paraMap);
+		String appBseDir = System.getProperty("app.base.dir");
+		String userInfoFile = appBseDir + File.separator + 
+ 				Constants.USER_INFO_DIR + File.separator + u.getUserName() + File.separator + Constants.FILE_CONTS_CALC_DATA;
+		dataService.saveJson(ret, userInfoFile);
+		} catch (Exception e) {
+				LOGGER.error("[calcAllLine] save error", e);
+				return new Message("-1", "错误", "服务器异常！");
+		}
+		LOGGER.info("[calcAllLine] return: " + ret);
+		return new Message("1", "成功", "计算成功！");
 	}
 	
 	@RequestMapping(value = "/data/download", method=RequestMethod.POST, 

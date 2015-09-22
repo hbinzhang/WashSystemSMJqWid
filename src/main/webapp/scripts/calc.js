@@ -3,6 +3,7 @@ var currentuserDispName = "";
 var currentuserCompName = "";
 var currentuserCompEs = "";
 var calcByDay = true;
+var needloadgriddata = true;
 
 $(document).ready(function () {
 	var aj = $.ajax( {    
@@ -111,7 +112,10 @@ $(document).ready(function () {
             var dataAdapter = new $.jqx.dataAdapter(source, {
             	loadComplete: function (data) { 
             		// calc all line
-                    calcAllLine();
+            		if (needloadgriddata) {
+            			needloadgriddata = false;
+            			calcAllLineServer();
+            		}
             	}
             });
 
@@ -202,7 +206,7 @@ $(document).ready(function () {
                         $("#jqxgrid").jqxGrid('deleterow', rows[rowscount-1].uid);
                     });
                     autoCalcButton.click(function (event) {
-                    	 calcAllLine();
+                    	calcAllLineServer();
                     });
                     // reload grid data.
                     uploadButton.click(function (event) {
@@ -749,6 +753,30 @@ function calcAllLine() {
 	for (var i = 0; i < len; i++) {
 		calcLineData(i);
 	}
+}
+
+function calcAllLineServer() {
+	var rows = $('#jqxgrid').jqxGrid('getrows');
+	var jsonpara = JSON.stringify({"data":rows});
+	var len = rows.length;
+	var aj = $.ajax( {    
+	    url:'data/calcAllLine',  
+	    contentType : 'application/json',
+	    data: jsonpara,
+	    type:'post',    
+	    cache:false,    
+	    dataType:'json',    
+	    success:function(data) {
+	    	if(data.code == '1'){    
+	    		$('#jqxgrid').jqxGrid('updatebounddata');
+	        }else{    
+	        	alert("计算异常！" + data.message);
+	        }  
+	    },    
+	    error : function() {    
+	         alert("计算异常！");    
+	    }    
+	});  
 }
 
 function calcStaticData() {
