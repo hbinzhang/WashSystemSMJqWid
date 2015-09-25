@@ -28,12 +28,23 @@ $(document).ready(function () {
 	var logoUrl = "url('./images/logo/" + currentuserCompEs + ".png')";
 	var banerUrl = "url('./images/logo/" + currentuserCompEs + "_header.jpg')";
 	var rooterUrl = "url('./images/logo/" + currentuserCompEs + "_rooter.jpg')";
-	$("#logoDiv").css({"float": "left","background-image":logoUrl, "background-repeat":"no-repeat", "background-position": "center left"});
+	
+	if (currentuser == "gjdw") {
+		$("#logoDiv").css({"float": "left","background-image":logoUrl, "background-repeat":"no-repeat", "background-position": "center left"});
+		$("#compNameLabel").html("<font size='6px' color='#408080'>" + currentuserCompName + "光伏板清洗管理系统</font>");
+	} else if(currentuser == "nfdw"|| currentuser == "zghn"|| currentuser == "zgdt"){
+		$("#logoDiv").html("");
+		$("#compNameLabel").html("");
+	} else {
+		$("#compNameLabel").html("");
+		$("#logoDiv").html("<font size='5px' color='#ffffff'>光伏板清洗管理系统</font>");
+	}
+	
 	$("#titleLabel").css({ "width":"1200px" ,"background-image":banerUrl, "background-size":"100% 100%"});
 	$("#rooter").css({"width":"1200px","background-image":rooterUrl, "background-size":"100% 100%"});
 	
 	//$("#compNameLabel").html("<font size='6px'>" + currentuserCompName + "光伏板清洗管理系统</font>");
-	$("#compNameLabel").html("");
+	
 	$("#rooterCompname").html("<font size='2px'>" + currentuserCompName + "版权所有</font>");
 	
 	if (currentuser == "") {
