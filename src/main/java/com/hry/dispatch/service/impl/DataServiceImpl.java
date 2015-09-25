@@ -340,9 +340,9 @@ public class DataServiceImpl {
 					str[j] = cell.getContents();
 				}
 				
-				System.out.print(str[j] + "\t");
+//				System.out.print(str[j] + "\t");
 			}
-			System.out.println("");
+//			System.out.println("");
 			// 把刚获取的列存入list
 			list.add(str);
 			

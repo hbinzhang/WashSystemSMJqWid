@@ -12,7 +12,7 @@ $(document).ready(function () {
                 
             $('#loginWin').jqxWindow({
             				theme: 'darkblue',
-            				isModal: true,
+            				isModal: false,
             				resizable : false,
                     height: 200, width: 500,
                     initContent: function () {
