@@ -7,8 +7,8 @@ $(document).ready(function () {
             $("#pass").jqxInput({theme: themeConstant,  height: 25, width: 200, minLength: 1});
 
             
-            $("#loginWinSubmit").jqxButton({theme: themeConstant,  width: '50'});
-            $("#loginWinCancel").jqxButton({theme: themeConstant,  width: '50'});
+            $("#loginWinSubmit").jqxButton({theme: 'darkblue',  width: '50'});
+            $("#loginWinCancel").jqxButton({theme: 'darkblue',  width: '50'});
                 
             $('#loginWin').jqxWindow({
             				theme: 'darkblue',
