@@ -22,6 +22,7 @@ import com.hry.dispatch.domain.Message;
 import com.hry.dispatch.util.*;
 
 import jxl.Cell;
+import jxl.NumberCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import jxl.format.Border;
@@ -132,72 +133,72 @@ public class DataServiceImpl {
 			}
 			line = (Map)data.get(i);
 			String value = null;
-			calcResult.put("date", String.valueOf((getDoubleFromMap(line, "date"))));
-			calcResult.put("wash_elec_amout", String.valueOf((getDoubleFromMap(line, "wash_elec_amout"))));
-			calcResult.put("cal_rate_index", String.valueOf((getDoubleFromMap(line, "cal_rate_index"))));
+			calcResult.put("date", String.format("%.6f", (getDoubleFromMap(line, "date"))));
+			calcResult.put("wash_elec_amout", String.format("%.6f", (getDoubleFromMap(line, "wash_elec_amout"))));
+			calcResult.put("cal_rate_index", String.format("%.6f", (getDoubleFromMap(line, "cal_rate_index"))));
 			// sumary
 			if (lastRec != null) {
-				value = String.valueOf((getDoubleFromMap(line, "wash_elec_amout") + getDoubleFromMap(lastRec, "sumary")));
+				value = String.format("%.6f", (getDoubleFromMap(line, "wash_elec_amout") + getDoubleFromMap(lastRec, "sumary")));
 				calcResult.put("sumary", value);
 				line.put("sumary", value);
 			} else {
-				value = String.valueOf(getDoubleFromMap(line, "wash_elec_amout"));
+				value = String.format("%.6f", getDoubleFromMap(line, "wash_elec_amout"));
 				calcResult.put("sumary", value);  
 				line.put("sumary", value);
 			}
 			
 			// cal_rate_index_sumary
-			value = String.valueOf(Math.pow(getDoubleFromMap(line, "cal_rate_index"), getDoubleFromMap(line, "date")));
+			value = String.format("%.6f", Math.pow(getDoubleFromMap(line, "cal_rate_index"), getDoubleFromMap(line, "date")));
 			calcResult.put("cal_rate_index_sumary", value);  
 			line.put("cal_rate_index_sumary", value);
 			// no_wash_elec_amout
-			value = String.valueOf(getDoubleFromMap(line, "wash_elec_amout") * getDoubleFromMap(line, "cal_rate_index_sumary"));
+			value = String.format("%.6f", getDoubleFromMap(line, "wash_elec_amout") * getDoubleFromMap(line, "cal_rate_index_sumary"));
 			calcResult.put("no_wash_elec_amout", value);  
 			line.put("no_wash_elec_amout", value);
 			// no_wash_elec_sumary
 			if (lastRec != null) {
-				value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout") + getDoubleFromMap(lastRec, "no_wash_elec_sumary"));
+				value = String.format("%.6f", getDoubleFromMap(line, "no_wash_elec_amout") + getDoubleFromMap(lastRec, "no_wash_elec_sumary"));
 			 	calcResult.put("no_wash_elec_sumary", value);
-			 	line.put("no_wash_elec_sumary", String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout") + getDoubleFromMap(lastRec, "no_wash_elec_sumary")));
+			 	line.put("no_wash_elec_sumary", String.format("%.6f", getDoubleFromMap(line, "no_wash_elec_amout") + getDoubleFromMap(lastRec, "no_wash_elec_sumary")));
 			} else {
-				value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout"));
+				value = String.format("%.6f", getDoubleFromMap(line, "no_wash_elec_amout"));
 				calcResult.put("no_wash_elec_sumary", value);
 				line.put("no_wash_elec_sumary", value);
 			}
 			
 			// cal_rate_sumary
-			value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_sumary") / getDoubleFromMap(line, "sumary"));
+			value = String.format("%.6f", getDoubleFromMap(line, "no_wash_elec_sumary") / getDoubleFromMap(line, "sumary"));
 			calcResult.put("cal_rate_sumary", value);
 			line.put("cal_rate_sumary", value);
 			// cal_rate
-			value = String.valueOf(1 - getDoubleFromMap(line, "date") * 0.0004);
+			value = String.format("%.6f", 1 - getDoubleFromMap(line, "date") * 0.0004);
 			calcResult.put("cal_rate", value);
 			line.put("cal_rate", value);
 			// no_wash_elec_amout_2
-			value = String.valueOf(getDoubleFromMap(line, "cal_rate") * getDoubleFromMap(line, "wash_elec_amout"));
+			value = String.format("%.6f", getDoubleFromMap(line, "cal_rate") * getDoubleFromMap(line, "wash_elec_amout"));
 			calcResult.put("no_wash_elec_amout_2", value);
 			line.put("no_wash_elec_amout_2", value);
 			// sumary_elec_amout
 			if (lastRec != null) {
-				value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout_2") + getDoubleFromMap(lastRec, "sumary_elec_amout"));
+				value = String.format("%.6f", getDoubleFromMap(line, "no_wash_elec_amout_2") + getDoubleFromMap(lastRec, "sumary_elec_amout"));
 			 	calcResult.put("sumary_elec_amout", value);
-			 	line.put("sumary_elec_amout", String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout_2") + getDoubleFromMap(lastRec, "sumary_elec_amout")));
+			 	line.put("sumary_elec_amout", String.format("%.6f", getDoubleFromMap(line, "no_wash_elec_amout_2") + getDoubleFromMap(lastRec, "sumary_elec_amout")));
 			} else {
-				value = String.valueOf(getDoubleFromMap(line, "no_wash_elec_amout_2"));
+				value = String.format("%.6f", getDoubleFromMap(line, "no_wash_elec_amout_2"));
 				calcResult.put("sumary_elec_amout", value);
 				line.put("sumary_elec_amout", value);
 			}
 			
 			// sumary_cal_rate
-			value = String.valueOf(getDoubleFromMap(line, "sumary_elec_amout") / getDoubleFromMap(line, "sumary"));
+			value = String.format("%.6f", getDoubleFromMap(line, "sumary_elec_amout") / getDoubleFromMap(line, "sumary"));
 			calcResult.put("sumary_cal_rate", value);
 			line.put("sumary_cal_rate", value);
 			// reduce_ratio
-			value = String.valueOf((getDoubleFromMap(line, "sumary") - getDoubleFromMap(line, "sumary_elec_amout")) * 2 / getDoubleFromMap(line, "sumary") / (getDoubleFromMap(line, "date") + 1));
+			value = String.format("%.6f", (getDoubleFromMap(line, "sumary") - getDoubleFromMap(line, "sumary_elec_amout")) * 2 / getDoubleFromMap(line, "sumary") / (getDoubleFromMap(line, "date") + 1));
 			calcResult.put("reduce_ratio", value);
 			line.put("reduce_ratio", value);
 			// lose_sumary
-			value = String.valueOf(getDoubleFromMap(line, "sumary") - getDoubleFromMap(line, "no_wash_elec_sumary") * 50000 / 6 / 10000);
+			value = String.format("%.6f", getDoubleFromMap(line, "sumary") - getDoubleFromMap(line, "no_wash_elec_sumary") * 50000 / 6 / 10000);
 			calcResult.put("lose_sumary", value);
 			line.put("lose_sumary", value);
 			dataList.add(calcResult);
@@ -310,7 +311,8 @@ public class DataServiceImpl {
 		List list = new ArrayList();
 		Workbook rwb = null;
 		Cell cell = null;
-
+		NumberCell ncell = null;
+		
 		// 创建输入流
 		InputStream stream = null;
 		try {
@@ -330,14 +332,20 @@ public class DataServiceImpl {
 
 			// 列数
 			for (int j = 0; j < sheet.getColumns(); j++) {
-
-				// 获取第i行，第j列的值
 				cell = sheet.getCell(j, i);
-				str[j] = cell.getContents();
-
+				if (cell instanceof NumberCell) {
+					ncell = (NumberCell)cell;
+					str[j] = String.valueOf(ncell.getValue());
+				} else {
+					str[j] = cell.getContents();
+				}
+				
+				System.out.print(str[j] + "\t");
 			}
+			System.out.println("");
 			// 把刚获取的列存入list
 			list.add(str);
+			
 		}
 		return list;
 		} catch (Exception e) {
@@ -488,15 +496,18 @@ public class DataServiceImpl {
 	}
 	
 	public static void main (String[] s) {
-		DataServiceImpl i = new DataServiceImpl();
-//		i.writeExcel();
-		try {
-			List l = i.readExcel("D:\\testJXL.xls");
-			System.out.println(l);
-		} catch (BiffException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		DataServiceImpl i = new DataServiceImpl();
+////		i.writeExcel();
+//		try {
+//			List l = i.readExcel("D:\\testJXL.xls");
+////			System.out.println(l);
+//		} catch (BiffException | IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
+		String re = String.format("%.6f", 0.892372873d);
+		System.out.println(re);
 	}
 
 }

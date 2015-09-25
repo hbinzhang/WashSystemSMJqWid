@@ -278,7 +278,7 @@ $(document).ready(function () {
                     	     }    
                     	});  
                     });
-                },
+                }
             });
 
             // events
@@ -575,7 +575,7 @@ $(document).ready(function () {
                     	// calc data from records
                     	calcStaticData();
                     });
-                },
+                }
             });
             
             $("#staticGrid").on('cellbeginedit', function (event) {

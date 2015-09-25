@@ -33,7 +33,7 @@ public class DataController {
 	@Autowired
 	private DataServiceImpl dataService;
 
-	@RequestMapping(value = "/data/fileupload")
+	@RequestMapping(value = "/data/dataupload")
 	public String upload(@RequestParam(value = "fname", required = false) MultipartFile file,
 			HttpServletRequest request, ModelMap model) {
 		LOGGER.info("[upload] start");
