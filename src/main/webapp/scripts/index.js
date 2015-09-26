@@ -14,6 +14,7 @@ $(document).ready(function () {
             				theme: 'darkblue',
             				isModal: false,
             				resizable : false,
+            				position: { x: 600, y: 305 },
                     height: 200, width: 500,
                     initContent: function () {
                         
