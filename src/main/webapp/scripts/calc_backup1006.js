@@ -31,7 +31,7 @@ $(document).ready(function () {
 	
 	if (currentuser == "gjdw") {
 		$("#logoDiv").css({"float": "left","background-image":logoUrl, "background-repeat":"no-repeat", "background-position": "center left"});
-		$("#compNameLabel").html("<font size='6px' color='#408080'>" + "光伏板清洗管理系统</font>");
+		$("#compNameLabel").html("<font size='6px' color='#408080'>" + currentuserCompName + "光伏板清洗管理系统</font>");
 	} else if(currentuser == "nfdw"|| currentuser == "zghn"|| currentuser == "zgdt"){
 		$("#logoDiv").html("");
 		$("#compNameLabel").html("");
@@ -40,8 +40,8 @@ $(document).ready(function () {
 		$("#logoDiv").html("<font size='5px' color='#ffffff'>光伏板清洗管理系统</font>");
 	}
 	
-	$("#titleLabel").css({ "width":"1010px" ,"background-image":banerUrl, "background-size":"100% 100%"});
-	$("#rooter").css({"width":"1010px","background-image":rooterUrl, "background-size":"100% 100%"});
+	$("#titleLabel").css({ "width":"1200px" ,"background-image":banerUrl, "background-size":"100% 100%"});
+	$("#rooter").css({"width":"1200px","background-image":rooterUrl, "background-size":"100% 100%"});
 	
 	//$("#compNameLabel").html("<font size='6px'>" + currentuserCompName + "光伏板清洗管理系统</font>");
 	
@@ -57,18 +57,9 @@ $(document).ready(function () {
 	$("#hellolabel").text('您好，' + currentuserDispName);
 //	$("#hellolabel").text('');
     //$('#splitContainer').jqxSplitter({ theme: themeConstant, height: 750, width: '100%', disabled: true, orientation: 'horizontal', panels: [{ size: 60 }, { size: 800 }] });
-    $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: 1010,  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
+    $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: 1200,  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
     $("#tabswidget").jqxTabs({ theme: themeConstant,  height: '100%', width: '100%', animationType: 'fade' });
-    var setStartTime = function() {
-    	$("#staticGrid").jqxGrid('setcellvalue', 2, 'item_2', startDate);
-    };
     
-    $('#tabswidget').on('tabclick', function (event) { 
-    	var clickedItem = event.args.item;
-    	if (clickedItem == 1) {
-    		setTimeout(setStartTime, 2000); 
-    	}
-    }); 
     $("#leftPanel").jqxPanel({theme: themeConstant, width: '100%', height: '100%'});
     
 //    $(window).resize(function(){ 
@@ -85,39 +76,25 @@ $(document).ready(function () {
     //$('#second').attr('dock', 'left');
     //$('#third').attr('dock', 'left');
     ////$('#fourth').attr('dock', 'left');
-    var startDate = '';
-    var endDate = '';
-    
     $('#titleLabel').jqxDockPanel('render');   
     // prepare the data
             var data = [{
-            	item_1 : '1',
-            	item_2 : '20',
-            	item_3 : '-'}
+            	date : 1,
+            	wash_elec_amout : '20',
+            	sumary:'-',
+            	no_wash_elec_amout:'-',
+            	no_wash_elec_sumary:'-',
+            	cal_rate_index_sumary:'-',
+            	cal_rate_index:'0.9',
+            	cal_rate_sumary:'-',
+            	cal_rate:'-',
+            	no_wash_elec_amout_2:'-',
+            	sumary_elec_amout:'-',
+            	sumary_cal_rate:'-',
+            	reduce_ratio:'-',
+            	lose_sumary:'-'}
             	];
-            
-            var stationSelectionData = [
-            ];
-            
-            var aj = $.ajax( {    
-        	    url:'data/stations',// 跳转到 action    
-        	    type:'get',    
-        	    async : false,
-        	    contentType : 'application/json',
-        	    cache:false,    
-        	    dataType:'json',    
-        	    success:function(data) { 
-        	    	var ss = data.data;
-        	        for (var i = 0; i < ss.length; i++) {
-        	        	stationSelectionData.push(ss[i].name);
-        	        }
-        	     },    
-        	     error : function() {    
-        	          alert("获取电站信息失败！");
-        	     }    
-        	});  
-            
-            var url = "./data/getStationData?stationName="+stationSelectionData[0];
+            var url = "./data/user/" + currentuser + "/calcData.json";
             var source = 
             {
                 //localdata: data,
@@ -131,27 +108,39 @@ $(document).ready(function () {
                 },
                 datafields:
                 [
-                   { name: 'item_1', type: 'string'},
-				   { name: 'item_2', type: 'string'},
-				   { name: 'item_3', type: 'string'}
+                   { name: 'date', type: 'int'},
+				   { name: 'wash_elec_amout', type: 'string'},
+				   { name: 'sumary', type: 'string'},
+				   { name: 'no_wash_elec_amout', type: 'string'},
+				   { name:  'no_wash_elec_sumary', type: 'string'},
+				   { name:  'cal_rate_index_sumary', type: 'string'},
+				   { name:  'cal_rate_index', type: 'string'},
+				   { name:  'cal_rate_sumary', type: 'string'},
+				   { name:  'cal_rate', type: 'string'},
+				   { name:  'no_wash_elec_amout_2', type: 'string'},
+				   { name:  'sumary_elec_amout', type: 'string'},
+				   { name:  'sumary_cal_rate', type: 'string'},
+				   { name:  'reduce_ratio', type: 'string'},
+				   { name:  'lose_sumary', type: 'string'}
                 ]
             };
 
             var dataAdapter = new $.jqx.dataAdapter(source, {
             	loadComplete: function (data) { 
-                    var dataLine = $('#jqxgrid').jqxGrid('getrowdata', 10);
-                    startDate = dataLine.item_1;
-                    var rows = $('#jqxgrid').jqxGrid('getrows');
-                    var lastLine = $('#jqxgrid').jqxGrid('getrowdata', rows.length - 1);
-                    endDate = lastLine.item_1;
+//            		alert(needloadgriddata);
+            		// calc all line
+            		if (needloadgriddata) {
+            			needloadgriddata = false;
+//            			calcAllLineServer();
+            		}
             	}
             });
-            
+
             // initialize jqxGrid
             $("#jqxgrid").jqxGrid(
             {
             	theme: themeConstant,
-                width: 1000,
+                width: 1190,
                 height: 710,
                 source: dataAdapter,
                 editable: true,
@@ -159,82 +148,139 @@ $(document).ready(function () {
                 selectionmode: 'multiplecellsadvanced',
                 columnsresize: true,
                 columns: [
-                  { text: '', editable : false, columntype: 'textbox', datafield: 'item_1', width: 360},
-                  { text: '光伏原始数据', editable : false, columntype: 'textbox', datafield: 'item_2', width: 320 },
-                  { text: '', editable : false, columntype: 'textbox', datafield: 'item_3', width: 320 }
+                  { text: '日期', columntype: 'textbox', datafield: 'date', width: 120,columntype: 'numberinput' },
+                  { text: '清洗电量', columntype: 'textbox', datafield: 'wash_elec_amout', width: 120 },
+                  { text: '累计', editable : false, columntype: 'textbox', datafield: 'sumary', width: 120 },
+                  { text: '不清洗电量', columngroup: 'indexModeGroup', editable : false,columntype: 'textbox', datafield: 'no_wash_elec_amout', width: 120 },
+                  { text: '不清洗累计', columngroup: 'indexModeGroup', editable : false,columntype: 'textbox', datafield: 'no_wash_elec_sumary', width: 120 },
+                  { text: '折算率指数（累计）', columngroup: 'indexModeGroup', editable : false,columntype: 'textbox', datafield: 'cal_rate_index_sumary', width: 150 },
+                  { text: '折算率指数', columngroup: 'indexModeGroup', columntype: 'textbox', datafield: 'cal_rate_index', width: 120 },
+                  { text: '累计折算率', columngroup: 'indexModeGroup', editable : false,columntype: 'textbox', datafield: 'cal_rate_sumary', width: 120 },
+                  { text: '折算率', columngroup: 'reduceModeGroup', editable : false,columntype: 'textbox', datafield: 'cal_rate', width: 120 },
+                  { text: '不清洗电量', columngroup: 'reduceModeGroup', editable : false,columntype: 'textbox', datafield: 'no_wash_elec_amout_2', width: 120 },
+                  { text: '累计电量', columngroup: 'reduceModeGroup', editable : false,columntype: 'textbox', datafield: 'sumary_elec_amout', width: 120 },
+                  { text: '累计折算率', columngroup: 'reduceModeGroup', editable : false,columntype: 'textbox', datafield: 'sumary_cal_rate', width: 120 },
+                  { text: '反推日降系数', columngroup: 'reduceModeGroup', editable : false,columntype: 'textbox', datafield: 'reduce_ratio', width: 120 },
+                  { text: '损失累计', columngroup: 'reduceModeGroup', editable : false,columntype: 'textbox', datafield: 'lose_sumary', width: 120 },
+                ],
+                columngroups: 
+                [
+                	{ text: '指数模式', align: 'center', name: 'indexModeGroup' },
+                  { text: '递减模式', align: 'center', name: 'reduceModeGroup' }
                 ],
                 showtoolbar: true,
                 toolbarheight : 40,
                 rendertoolbar: function (statusbar) {
                     // appends buttons to the status bar.
                     var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-                    var stationSelection = $("<div id = 'stationSelection' style='float: left; margin-left: 5px;margin-top: 2px;'></div>");
+                    var addButton = $("<div style='float: left; margin-left: 5px; margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/add.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>添加记录</span></div>");
+                    var deleteButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/close.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>删除记录</span></div>");
+                    var autoCalcButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/calendarIcon.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>自动计算</span></div>");
+                    var uploadButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowup.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>上传记录</span></div>");
                     var downldButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowdown.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>下载记录</span></div>");
-
-                    container.append(stationSelection);
-                    
+                    var saveButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/search.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>保存记录</span></div>");
+                    container.append(addButton);
+                    container.append(deleteButton);
+                    container.append(autoCalcButton);
+                    container.append(uploadButton);
                     container.append(downldButton);
-                   
+                    container.append(saveButton);
                     statusbar.append(container);
-                    stationSelection.jqxDropDownList({
-                    	autoOpen: true, 
-                    	source: stationSelectionData, 
-                    	selectedIndex: 1, 
-                    	placeHolder: "请选择电站:",
-                    	width: '200', 
-                    	height: '25'});
-                    if (stationSelectionData.length > 0) {
-                    	stationSelection.jqxDropDownList('selectItem', stationSelectionData[0] );
-                    }
+                    addButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
+                    deleteButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
+                    autoCalcButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
+                    uploadButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
                     downldButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
-                    
-                    stationSelection.on('select', function (event)
-                    		{
-                    		    var args = event.args;
-                    		    if (args) {
-                    		    // index represents the item's index.                
-                    		    var index = args.index;
-                    		    var item = args.item;
-                    		    // get item's label and value.
-                    		    var label = item.label;
-                    		    var value = item.value;
-                    		    // update table data
-                    		    source.url = "./data/getStationData?stationName="+value;
-                    		    $('#jqxgrid').jqxGrid('updatebounddata');
-                    		}                        
+                    saveButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
+                    // add new row.
+                    addButton.click(function (event) {
+                    	var rows = $('#jqxgrid').jqxGrid('getrows');
+                    	var rowLen = rows.length;
+                        var datarow = {
+                            	date : rowLen + 1,
+                            	wash_elec_amout : '',
+                            	sumary:'-',
+                            	no_wash_elec_amout:'-',
+                            	no_wash_elec_sumary:'-',
+                            	cal_rate_index_sumary:'-',
+                            	cal_rate_index:'',
+                            	cal_rate_sumary:'-',
+                            	cal_rate:'-',
+                            	no_wash_elec_amout_2:'-',
+                            	sumary_elec_amout:'-',
+                            	sumary_cal_rate:'-',
+                            	reduce_ratio:'-',
+                            	lose_sumary:'-'};
+                        $("#jqxgrid").jqxGrid('addrow', null, datarow);
                     });
-                    
+                    // delete selected row.
+                    deleteButton.click(function (event) {
+                        var rowscount = $("#jqxgrid").jqxGrid('getdatainformation').rowscount;
+                        if (rowscount == 0) {
+                        	return;
+                        }
+                        var rows = $("#jqxgrid").jqxGrid('getboundrows');
+                        $("#jqxgrid").jqxGrid('deleterow', rows[rowscount-1].uid);
+                    });
+                    autoCalcButton.click(function (event) {
+                    	calcAllLineServer();
+                    });
+                    // reload grid data.
+                    uploadButton.click(function (event) {
+                    	//console.log("start to upload");
+                    	$('#jqxFileUploadWin').jqxWindow('open');
+                    });
                     downldButton.click(function (event) {
+                        //console.log("start to download");
                     	var rows = $('#jqxgrid').jqxGrid('getrows');
                     	var jsonpara = JSON.stringify({"data":rows});
-                    	var item = stationSelection.jqxDropDownList('getSelectedItem'); 
-                    	window.location.href='./data/user/' + currentuser+ '/电站原始数据/' + item.value + '.xls';
-                    	/*var aj = $.ajax( {    
-                    	    url:'data/download', 
+                    	var aj = $.ajax( {    
+                    	    url:'data/download',// 跳转到 action    
                     	    type:'post',    
                     	    async : false,
                     	    contentType : 'application/json',
                     	    cache:false,    
                     	    data: jsonpara,
                     	    dataType:'json',    
-                    	    success:function(data) {
-                    	        if(data.code == '1'){
-                    	        	window.location.href='./data/user/' + currentuser+ '/' + item.value + '.xls';
-                    	        }else{
+                    	    success:function(data) {    
+                    	        if(data.code == '1'){    
+                    	        	window.location.href='./data/user/' + currentuser+ '/calcData.xls';
+                    	        }else{    
                     	        	alert("下载异常！" + data.message);
                     	        }  
                     	     },    
                     	     error : function() {    
                     	          alert("下载失败！");
                     	     }    
-                    	});  */
+                    	});  
                     });
-                    
+                    saveButton.click(function (event) {
+                    	//console.log("start to save");
+                    	var rows = $('#jqxgrid').jqxGrid('getrows');
+                    	var jsonpara = JSON.stringify({"data":rows});
+                    	var aj = $.ajax( {    
+                    	    url:'data/save',// 跳转到 action    
+                    	    contentType : 'application/json',
+                    	    data: jsonpara,
+                    	    type:'post',    
+                    	    cache:false,    
+                    	    dataType:'json',    
+                    	    success:function(data) {    
+                    	        if(data.code == '1'){    
+                    	        	alert("保存成功！");
+                    	            //window.location.reload(); 
+                    	        } else {    
+                    	        	alert("保存异常！" + data.message);
+                    	        }    
+                    	     },    
+                    	     error : function() {    
+                    	          alert("保存异常！");    
+                    	     }    
+                    	});  
+                    });
                 }
             });
 
-             
-            
             // events
 //            $("#jqxgrid").on('cellbeginedit', function (event) {
                 //var args = event.args;
@@ -244,6 +290,7 @@ $(document).ready(function () {
 //            $("#jqxgrid").on('cellendedit', function (event) {
 //            	// row's bound index.
 //                var rowBoundIndex = event.args.rowindex;
+//                //console.log("rowBoundIndex is: " + rowBoundIndex);
 //                var dataField = event.args.datafield;
 //                var rowBoundIndex = event.args.rowindex;
 //                var value = args.value;
@@ -251,49 +298,191 @@ $(document).ready(function () {
 //                calcLineData(rowBoundIndex);
 //            });
             
-            var dataSta = [
+            var dataSta = [{
+            	ratio:'',
+            	data:'0',
+            	unit:'',
+            	source:'人工输入',
+            	comment:'标杆板评价期首日电量底数'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:'标杆板评价日电量底数'
+            	},{
+            	ratio:'',
+            	data:'1',
+            	unit:'',
+            	source:'人工输入',
+            	comment:'倍率'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:'评价发电天数'
+            	},{
+            	ratio:'',
+            	data:'0',
+            	unit:'',
+            	source:'人工输入',
+            	comment:'评价板评价期首日电量底数'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:'评价板评价日电量底数'
+            	},{
+            	ratio:'',
+            	data:'1',
+            	unit:'',
+            	source:'人工输入',
+            	comment:'折算系数'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:''
+            	},{
+            	ratio:'',
+            	data:'5.83',
+            	unit:'万元',
+            	source:'人工输入',
+            	comment:'单次清洗费用'
+            	},{
+            	ratio:'',
+            	data:'365',
+            	unit:'天',
+            	source:'人工输入',
+            	comment:'费用核算周期'
+            	},{
+            	ratio:'',
+            	data:'0.8120',
+            	unit:'万元/万Kwh',
+            	source:'人工输入',
+            	comment:'结算单价（不含税）'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'系统自己算',
+            	comment:'每日平均发电量'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'天',
+            	source:'系统自己算',
+            	comment:'不清洗光伏板日降系数'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'系统自己算',
+            	comment:'清洗周期'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:''
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'系统自己算',
+            	comment:'清洗次数'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'系统自己算',
+            	comment:'清洗周期损失电量'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'系统自己算',
+            	comment:'评价周期损失电量'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'万元',
+            	source:'系统自己算',
+            	comment:'评价周期损失费用'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'万元',
+            	source:'系统自己算',
+            	comment:'清洗费用'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:'费用合计'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:''
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:'清洗周期'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:'全年每日清洗总费用'
+            	},{
+            	ratio:'',
+            	data:'',
+            	unit:'',
+            	source:'',
+            	comment:'每天电量损失费用'
+            	}
             	];
-            var dataStaUrl = 'data/user/gjdw/stadata.json';
+
             var sourceSta = 
             {
-                //localdata: dataSta,
-                url: dataStaUrl,
-                datatype: "json",
+                localdata: dataSta,
+                datatype: "array",
                 updaterow: function (rowid, rowdata, commit) {
+                    // synchronize with the server - send update command
+                    // call commit with parameter true if the synchronization with the server is successful 
+                    // and with parameter false if the synchronization failder.
                     commit(true);
                 },
                 datafields:
                 [
-	                { name: 'item_1', type: 'string'},
-					{ name: 'item_2', type: 'string'},
-					{ name: 'item_3', type: 'string'}
+                   { name: 'ratio', type: 'string'},
+					         { name: 'data', type: 'string'},
+					         { name: 'unit', type: 'string'},
+					         { name: 'source', type: 'string'},
+					         { name: 'comment', type: 'string'}
                 ]
             };
 
-		    var selModeData = [
-                    "优化计算",
-                    "清洗推演"
+						var selModeData = [
+                    "由天数计算",
+                    "由效益计算"
 		        ];
 		        
-            var dataAdapterSta = new $.jqx.dataAdapter(sourceSta, {
-            	loadComplete: function (data) { 
-            		
-            	}
-            });
+            var dataAdapterSta = new $.jqx.dataAdapter(sourceSta);
 
-            var beginedit = function(row, datafield, columntype) {  
-                if ((row == 2) || (row == 3)) {  
-                    return true;  
-                } else {
-                	return false;
-                }
-            };  
-            
             // initialize jqxGrid
             $("#staticGrid").jqxGrid(
             {
             	theme: themeConstant,
-            	width: 1000,
+                width: '99%',
                 height: 715,
                 source: dataAdapterSta,
                 enabletooltips: true,
@@ -301,20 +490,11 @@ $(document).ready(function () {
                 selectionmode: 'multiplecellsadvanced',
                 columnsresize: true,
                 columns: [
-                  { text: '指标名称', columntype: 'textbox', editable : false, datafield: 'item_1', width: 360},
-                  { text: '推演结果', columntype: 'textbox', editable : true, datafield: 'item_2', width: 320, cellbeginedit: beginedit,columntype: 'datetimeinput', cellsformat: 'yyyy/M/d',
-                	  validation: function (cell, value) {
-                          if (value == "")
-                             return true;
-
-                          var year = value.getFullYear();
-                          if (year >= 2015) {
-                              return { result: false, message: "选择的日期必须处于光伏原始数据时间段内" };
-                          }
-                          return true;
-                      }
-                  },
-                  { text: '指标单位', columntype: 'textbox', editable : false, datafield: 'item_3', width: 320 }
+                  { text: '名称', columntype: 'textbox', editable : false,datafield: 'comment'},
+                  { text: '系数', columntype: 'textbox', editable : false,datafield: 'ratio', width: 150 },
+                  { text: '数值', columntype: 'textbox', datafield: 'data', width: 150 },
+                  { text: '单位', columntype: 'textbox', editable : false,datafield: 'unit', width: 170 },
+                  { text: '参数来源', columntype: 'textbox', editable : false,datafield: 'source', width: 350 }
                  
                 ],
                 
@@ -323,24 +503,24 @@ $(document).ready(function () {
                 rendertoolbar: function (statusbar) {
                     // appends buttons to the status bar.
                     var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-                    var dropSelMode = $("<div id='dropSelMode' style='float: left; margin-left: 5px;margin-top: 0px;'>优化计算</div>");
-                    var bytimeinput = $("<div id='bytimeinput'  style='float: left; margin-left: 5px;margin-top: 2px;'><input type='text' id='bytimeinput'/></div>");
+                    var dropSelMode = $("<div id='dropSelMode' style='float: left; margin-left: 5px;margin-top: 7px;'>按时间计算</div>");
+                    var bytimeinput = $("<div id='bytimeinput'  style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='bytimeinput'/></div>");
                     var dropSelMode2 = $("<div id='dropSelMode2'  style='float: left; margin-left: 5px;margin-top: 7px;'>按结果反推</div>");
                     var byresultinput = $("<div id='byresultinput'  style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='byresultinput'/></div>");
                     var dlButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowdown.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>下载记录</span></div>");
-                    var calcButton = $("<div style='float: left; margin-left: 25px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/search.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>计算结果</span></div>");
-                    //container.append(dropSelMode);
-                    //container.append(bytimeinput);
+                    var saveButton = $("<div style='float: left; margin-left: 25px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/search.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>计算结果</span></div>");
+//                    container.append(dropSelMode);
+                    container.append(bytimeinput);
 //                    container.append(dropSelMode2);
 //                    container.append(byresultinput);
-                    container.append(calcButton);
+                    container.append(saveButton);
                     container.append(dlButton);
                     statusbar.append(container);
-                    dropSelMode.jqxDropDownList({autoOpen: true, source: selModeData, selectedIndex: 1, width: '200', height: '25'});
+                    //dropSelMode.jqxDropDownList({autoOpen: true, source: selModeData, selectedIndex: 1, width: '200', height: '25'});
 //                    dropSelMode.jqxRadioButton({ theme: themeConstant,width: 100, height: 25, checked: true});
 //                    dropSelMode2.jqxRadioButton({theme: themeConstant, width: 100, height: 25, checked: false});
                     dlButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
-                    calcButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
+                    saveButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
                     bytimeinput.jqxInput({theme: themeConstant,placeHolder: "请输入参考天数", height: 25, width: 100, minLength: 1 });
                     byresultinput.jqxInput({theme: themeConstant,placeHolder: "请输入参考结果", height: 25, width: 100, minLength: 1,disabled:true });
                     
@@ -391,11 +571,18 @@ $(document).ready(function () {
                     	});  
                     });
                     
-                    calcButton.click(function (event) {
+                    saveButton.click(function (event) {
                     	// calc data from records
                     	calcStaticData();
                     });
                 }
+            });
+            
+            $("#staticGrid").on('cellbeginedit', function (event) {
+                var rowBoundIndex = event.args.rowindex;
+//                if (rowBoundIndex == 0 ||rowBoundIndex == 2 ||rowBoundIndex == 4 ) {
+//                	return false;
+//                }
             });
             
             $("#username").jqxInput({theme: themeConstant, value: currentuser, height: 25, width: 200, minLength: 1});

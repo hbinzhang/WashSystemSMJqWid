@@ -9,6 +9,7 @@ public class Constants {
 	public static final String EXCEL_INFO_DIR = "data" + File.separator + "excel";
 	public static final String JSON_INFO_DIR = "data" + File.separator + "json";
 	public static final String TMP_DIR = "tmp";
+	public static final String ORI_DATA_DIR = "电站原始数据";
 	
 	public static final String USER_INFO_FILE = "userinfo.db";
 	public static final String USER_INFO_LOGIN_NAME = "登录名";
@@ -60,4 +61,9 @@ public class Constants {
 	public static final String FILE_CONTS_CALC_DATA = "calcData.json";
 	public static final String FILE_CONTS_CALC_DATA_XLS = "calcData.xls";
 	public static final String FILE_CONTS_CALC_STATIC_DATA_XLS = "staticResult.xls";
+	
+	public static final String JSON_GET_STATIONS_KEY ="name";
+
+	public static final String EXT_NAME_XLS =".xls";
+	
 }

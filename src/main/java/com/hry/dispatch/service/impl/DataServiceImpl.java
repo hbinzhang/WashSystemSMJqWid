@@ -19,9 +19,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.hry.dispatch.domain.Message;
+import com.hry.dispatch.domain.Station;
 import com.hry.dispatch.util.*;
 
 import jxl.Cell;
+import jxl.DateCell;
 import jxl.NumberCell;
 import jxl.Sheet;
 import jxl.Workbook;
@@ -215,6 +217,69 @@ public class DataServiceImpl {
 		}
 	}
 	
+	public List getStations(String uName) {
+		LOGGER.warn("[getStations] uName is: " + uName);
+		String appBseDir = System.getProperty("app.base.dir");
+		String userInfoFile = appBseDir + File.separator + 
+ 				Constants.USER_INFO_DIR + File.separator + uName + File.separator + Constants.ORI_DATA_DIR;
+		File f = new File(userInfoFile);
+		List allMap = new ArrayList();
+		if (f.isDirectory()) {
+			String[] files = f.list();
+			if (files == null || files.length <= 0) {
+				LOGGER.warn("[getStations] no stations here");
+				return allMap;
+			}
+			for (String file : files) {
+				file = file.substring(0, file.indexOf("."));
+				allMap.add(new Station( file));
+			}
+			return allMap;
+		} else {
+			LOGGER.warn("[getStations] ORI_DATA_DIR not exist");
+			return allMap;
+		}
+	}
+	
+	public List getStationData(String uName, String sName) {
+		LOGGER.warn("[getStationData] uName is: " + uName + "\tsName: " + sName);
+		String appBseDir = System.getProperty("app.base.dir");
+		String userInfoFile = appBseDir + File.separator + 
+ 				Constants.USER_INFO_DIR + File.separator + uName + File.separator + Constants.ORI_DATA_DIR;
+		File f = new File(userInfoFile);
+		List allMap = new ArrayList();
+		if (f.isDirectory()) {
+			String fPath = userInfoFile + File.separator + sName + Constants.EXT_NAME_XLS;
+			try {
+				List cont = readExcel(fPath);
+				if (cont == null || cont.size() == 0) {
+					LOGGER.warn("[getStationData] cont is null");
+					return allMap;
+				}
+				for (String[] line : (List<String[]>)cont) {
+					Map t = new HashMap();
+					int si = line.length;
+					if (si > 0) {
+						t.put("item_1", line[0]);
+					}
+					if (si > 1) {
+						t.put("item_2", line[1]);
+					}
+					if (si > 2) {
+						t.put("item_3", line[2]);
+					}
+					allMap.add(t);
+				}
+			} catch (Exception e) {
+				LOGGER.error("[getStationData] error",  e);
+			}
+			return allMap;
+		} else {
+			LOGGER.warn("[getStationData] ORI_DATA_DIR not exist");
+			return allMap;
+		}
+	}
+	
 	public void saveXls(Map<String, ? extends Object> paraMap, String uname) throws Exception {
 		String appBseDir = System.getProperty("app.base.dir");
 		LOGGER.info("[saveXls] start appBseDir " + appBseDir);
@@ -312,6 +377,7 @@ public class DataServiceImpl {
 		Workbook rwb = null;
 		Cell cell = null;
 		NumberCell ncell = null;
+		DateCell dcell = null;
 		
 		// 创建输入流
 		InputStream stream = null;
@@ -336,6 +402,9 @@ public class DataServiceImpl {
 				if (cell instanceof NumberCell) {
 					ncell = (NumberCell)cell;
 					str[j] = String.valueOf(ncell.getValue());
+				} else if (cell instanceof DateCell) {
+					dcell = (DateCell)cell;
+					str[j] = TimeConvertor.date2String(dcell.getDate(), TimeConvertor.FORMAT_SLASH_DAY);
 				} else {
 					str[j] = cell.getContents();
 				}

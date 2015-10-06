@@ -66,6 +66,12 @@ public class UserController {
 				LOGGER.info("[auth] new user create tmp dir");
 				dirt.mkdirs();
 			}
+			String oriDataDir = appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + userName + File.separator + Constants.ORI_DATA_DIR;
+			File oriDataDirF = new File(oriDataDir);
+			if (!oriDataDirF.exists()) {
+				LOGGER.info("[auth] new user create tmp dir");
+				oriDataDirF.mkdirs();
+			}
 			request.getSession().setAttribute(Constants.SESSION_KEY_USER_INFO, u);
 			return new Message("1","Login success","登陆成功");
 		} catch (Exception e) {

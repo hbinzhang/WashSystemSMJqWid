@@ -1,7 +1,9 @@
 package com.hry.dispatch.controller;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -161,6 +163,47 @@ public class DataController {
 			Message ret = new Message("1", "成功", "成功");
 			LOGGER.info("[save] return: " + ret);
 			return ret;
-		}
+	}
 	
+	@RequestMapping(value = "/data/stations", method=RequestMethod.GET, 
+			headers = {"content-type=application/json","content-type=application/xml"})
+	public @ResponseBody Message getStations(HttpServletRequest request) {
+		LOGGER.info("[save] start getStations");
+		// save to user/<username>/calcData.json
+		User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+		Map ret = new HashMap();
+		if (u == null) {
+			LOGGER.info("[getStations] user is null");
+			return new Message("-1", "错误", "用户未登陆！");
+		}
+		try {
+		List dataMap =  dataService.getStations(u.getUserName());
+		Message result = new Message("1", "成功", "计算成功！");
+		result.setData(dataMap);
+		LOGGER.info("[getStations] return: " + result);
+		return result;
+		} catch (Exception e) {
+				LOGGER.error("[calcAllLine] save error", e);
+				return new Message("-1", "错误", "服务器异常！");
+		}
+	}
+	
+	@RequestMapping(value = "/data/getStationData", method=RequestMethod.GET)
+	public @ResponseBody List getStationData(@RequestParam("stationName") String stationName, HttpServletRequest request) {
+		LOGGER.info("[getStationData] start getStationData");
+		// save to user/<username>/calcData.json
+		User u = (User) request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+		Map ret = new HashMap();
+		if (u == null) {
+			LOGGER.info("[getStationData] user is null");
+			return new ArrayList();
+		}
+		try {
+			List dataMap = dataService.getStationData(u.getUserName(), stationName);
+			return dataMap;
+		} catch (Exception e) {
+			LOGGER.error("[calcAllLine] save error", e);
+			return new ArrayList();
+		}
+	}
 }

@@ -46,7 +46,7 @@
 <body class='default' >
 	<!-- 为了兼容IE8加载延迟的特殊处理 <img src="./images/logo/loading.gif"></img>-->
 	<div id="loadingDiv" class="lodingDivCLs">页面加载中，请稍后</div>
-    <div id="splitContainer">
+    <div id="splitContainer" style="width: 1200px; margin:0 auto">
         <div id="titleLabel" class="titleLabelCls" style="background-image:url('')">
            <div id="logoDiv" class="logoDivCls" style="float: left;  ">
         		</div>
@@ -68,18 +68,14 @@
                 <div>
                     <div class="jqx-hideborder jqx-hidescrollbars" id="tabswidget">
                         <ul>
-                            <li style="margin-left: 30px;">光伏原始数据</li>
-                            <li>统计计算结果</li>
-                            <li>清洗推演结果</li>
+                            <li style="margin-left: 30px;">数据录入</li>
+                            <li>统计计算</li>
                         </ul>
                         <div id="main_calc">
                         	<div id="jqxgrid"></div>
                         </div>
                         <div id="main_static">
                            <div id="staticGrid"></div>
-                        </div>
-                        <div id="deduce_static">
-                           <div id="deduceGrid"></div>
                         </div>
                     </div>
                 </div>
