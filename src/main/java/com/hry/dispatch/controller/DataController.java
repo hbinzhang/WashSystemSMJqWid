@@ -161,8 +161,32 @@ public class DataController {
 				return new Message("-1", "错误", "服务器异常！");
 			}
 			Message ret = new Message("1", "成功", "成功");
-			LOGGER.info("[save] return: " + ret);
+			LOGGER.info("[staticDownload] return: " + ret);
 			return ret;
+	}
+	
+	@RequestMapping(value = "/static/calcReportData", method=RequestMethod.POST, 
+			headers = {"content-type=application/json","content-type=application/xml"})
+	public @ResponseBody Message calcReportData(@RequestBody Map<String, ? extends Object> paraMap, 
+			@RequestParam("stationName") String stationName, 
+			HttpServletRequest request) {
+			LOGGER.info("[calcReportData] start stationName is: " + stationName + "\nparaMap is:" + paraMap);
+			// save to user/<username>/calcData.json and user/<username>/calcData.xls
+			User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+			if (u == null) {
+				LOGGER.info("[staticDownload] user is null");
+				return new Message("-1", "错误", "未登录，请从新登陆！");
+			}
+			try {
+				List res = dataService.calcReportData(paraMap, stationName, u.getUserName());
+				Message ret = new Message("1", "成功", "成功");
+				ret.setData(res);
+				LOGGER.info("[calcReportData] return: " + ret);
+				return ret;
+			} catch (Exception e) {
+				LOGGER.error("[calcReportData] download error", e);
+				return new Message("-1", "错误", "服务器异常！");
+			}
 	}
 	
 	@RequestMapping(value = "/data/stations", method=RequestMethod.GET, 

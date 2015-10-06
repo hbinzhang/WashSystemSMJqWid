@@ -61,6 +61,7 @@ $(document).ready(function () {
     $("#tabswidget").jqxTabs({ theme: themeConstant,  height: '100%', width: '100%', animationType: 'fade' });
     var setStartTime = function() {
     	$("#staticGrid").jqxGrid('setcellvalue', 2, 'item_2', startDate);
+    	$("#staticGrid").jqxGrid('setcellvalue', 3, 'item_2', endDate);
     };
     
     $('#tabswidget').on('tabclick', function (event) { 
@@ -87,6 +88,7 @@ $(document).ready(function () {
     ////$('#fourth').attr('dock', 'left');
     var startDate = '';
     var endDate = '';
+    var selectedStation = '';
     
     $('#titleLabel').jqxDockPanel('render');   
     // prepare the data
@@ -118,6 +120,7 @@ $(document).ready(function () {
         	});  
             
             var url = "./data/getStationData?stationName="+stationSelectionData[0];
+            selectedStation = stationSelectionData[0];
             var source = 
             {
                 //localdata: data,
@@ -200,6 +203,7 @@ $(document).ready(function () {
                     		    var value = item.value;
                     		    // update table data
                     		    source.url = "./data/getStationData?stationName="+value;
+                    		    selectedStation = value;
                     		    $('#jqxgrid').jqxGrid('updatebounddata');
                     		}                        
                     });
@@ -392,8 +396,40 @@ $(document).ready(function () {
                     });
                     
                     calcButton.click(function (event) {
-                    	// calc data from records
-                    	calcStaticData();
+                    	var rows = $('#staticGrid').jqxGrid('getrows');
+                    	if(rows[2].item_2 == '' || rows[2].item_2 == '--' ) {
+                    		alert("请选择起始日期");
+                    		return;
+                    	}
+                    	if(rows[3].item_2 == '' || rows[3].item_2 == '--' ) {
+                    		alert("请选择评价日期");
+                    		return;
+                    	}
+                    	var jsonpara = JSON.stringify({"data":rows});
+                    	var len = rows.length;
+                    	var aj = $.ajax( {    
+                    	    url:'static/calcReportData?stationName='+selectedStation,  
+                    	    contentType : 'application/json',
+                    	    data: jsonpara,
+                    	    type:'post',    
+                    	    cache:false,    
+                    	    dataType:'json',    
+                    	    success:function(data) {
+                    	    	if(data.code == '1'){  
+                    	    		// update data manually
+                    	    		for (var i = 4; i < 14; i++) {
+                    	    			var dd = data.data[i].item_2;
+                    	    			$("#staticGrid").jqxGrid('setcellvalue', i, 'item_2', dd);
+                    	    		}
+                    	    		
+                    	        }else{    
+                    	        	alert("计算异常！" + data.message);
+                    	        }  
+                    	    },    
+                    	    error : function() {    
+                    	         alert("计算异常！");    
+                    	    }    
+                    	});  
                     });
                 }
             });

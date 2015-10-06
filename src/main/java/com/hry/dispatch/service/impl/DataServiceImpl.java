@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -17,6 +19,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hry.dispatch.domain.Message;
 import com.hry.dispatch.domain.Station;
@@ -116,6 +119,7 @@ public class DataServiceImpl {
 		LOGGER.debug("[saveJson] write json end: " + jsonstr);
 	}
 	
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Map calcAllLine(Map<String, ? extends Object> paraMap) {
 		List data = (List) paraMap.get("data");
 		LOGGER.debug("[calcAllLine] data: " + data);
@@ -217,6 +221,7 @@ public class DataServiceImpl {
 		}
 	}
 	
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public List getStations(String uName) {
 		LOGGER.warn("[getStations] uName is: " + uName);
 		String appBseDir = System.getProperty("app.base.dir");
@@ -241,6 +246,7 @@ public class DataServiceImpl {
 		}
 	}
 	
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public List getStationData(String uName, String sName) {
 		LOGGER.warn("[getStationData] uName is: " + uName + "\tsName: " + sName);
 		String appBseDir = System.getProperty("app.base.dir");
@@ -277,6 +283,150 @@ public class DataServiceImpl {
 		} else {
 			LOGGER.warn("[getStationData] ORI_DATA_DIR not exist");
 			return allMap;
+		}
+	}
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public List calcReportData(Map<String, ? extends Object> paraMap, 
+			String sName, String uName) {
+		String appBseDir = System.getProperty("app.base.dir");
+		String userInfoFile = appBseDir + File.separator + 
+ 				Constants.USER_INFO_DIR + File.separator + uName + File.separator + Constants.ORI_DATA_DIR;
+		File f = new File(userInfoFile);
+		List allList = new ArrayList();
+		if (f.isDirectory()) {
+			String fPath = userInfoFile + File.separator + sName + Constants.EXT_NAME_XLS;
+			try {
+				List cont = readExcel(fPath);
+				if (cont == null || cont.size() == 0) {
+					LOGGER.warn("[calcReportData] cont is null");
+					return allList;
+				}
+				List reqDataList = (List)paraMap.get("data");
+				Map stMap = (Map)reqDataList.get(2);
+				Map etMap = (Map)reqDataList.get(3);
+				String st = stMap.get("item_2").toString();
+				String et = stMap.get("item_2").toString();
+				int stIndex = -1;
+				int etIndex = -1;
+				int ind = 0;
+				for (String[] line : (List<String[]>)cont) {
+					Map t = new HashMap();
+					int si = line.length;
+					if (si > 0) {
+						if ( line[0].trim().equals(st) ) {
+							stIndex = ind;
+						}
+						if ( line[0].trim().equals(et) ) {
+							etIndex = ind;
+						}
+						t.put("item_1", line[0]);
+					}
+					if (si > 1) {
+						t.put("item_2", line[1]);
+					}
+					if (si > 2) {
+						t.put("item_3", line[2]);
+					}
+					allList.add(t);
+					ind++;
+				}
+				LOGGER.info("[calcReportData] stIndex: " + stIndex + "\tetIndex: " + etIndex);
+				if (stIndex < 0) {
+					stIndex = 9;// 起始 行
+				}
+				double beiRate = getStaticDataFromMap(cont, 2, 1);
+				double calcIndex = getStaticDataFromMap(cont, 3, 1);
+				double chuanNum = getStaticDataFromMap(cont, 1, 1);
+				double elecPrice = getStaticDataFromMap(cont, 4, 1);
+				double onceWashCost = getStaticDataFromMap(cont, 5, 1);
+				
+				Map dayShouldAmoutMap = (Map)reqDataList.get(4);
+				double selecedDayWashData = getStaticDataFromMap(cont, etIndex, 1);
+				double selecedLastDayWashData = getStaticDataFromMap(cont, etIndex-1, 1);
+				double dayShouldAmout = (selecedDayWashData - selecedLastDayWashData) * beiRate * chuanNum;
+				dayShouldAmoutMap.put("item_2", String.format("%.6f", dayShouldAmout));
+				
+				Map dayActualAmoutMap = (Map)reqDataList.get(5);
+				double selecedDaySampleData = getStaticDataFromMap(cont, etIndex, 2);
+				double selecedLastDaySampleData = getStaticDataFromMap(cont, etIndex-1, 2);
+				double dayActualAmout = (selecedDaySampleData - selecedLastDaySampleData) * beiRate * chuanNum;
+				dayActualAmoutMap.put("item_2", String.format("%.6f", dayActualAmout));
+				
+				Map dayLostAmoutMap = (Map)reqDataList.get(6);
+				double dayLostAmout = (dayShouldAmout - dayActualAmout);
+				dayLostAmoutMap.put("item_2", String.format("%.6f", dayLostAmout));
+				
+				Map sumLostAmoutMap = (Map)reqDataList.get(7);
+				double startDayWashData = getStaticDataFromMap(cont, stIndex, 1);
+				double sumLostAmout = (selecedDayWashData - startDayWashData - selecedDaySampleData + selecedLastDaySampleData) * beiRate * chuanNum;
+				sumLostAmoutMap.put("item_2", String.format("%.6f", sumLostAmout));
+				
+				Map sumLostAmoutCostMap = (Map)reqDataList.get(8);
+				double sumLostAmoutCost = sumLostAmout * elecPrice;
+				sumLostAmoutCostMap.put("item_2", String.format("%.6f", sumLostAmoutCost));
+				
+				// calc day
+				double firstValueModelBoard = 0;
+				double currentValueModelBoard = 0;
+				double dayCount = 0;
+				double firstValueJudgeBoard = 0;
+				double currentValueJudgeBoard = 0;
+				double costCheckPeriod = 365;
+				double dayAvgProcudeElecAmout = 0;
+				double dayFallIndex = 0;
+				double theoryWashPeriod = 0;
+				double theoryWashTimeYear = 0;
+				double washPeriodLostAmout = 0;
+				double judgePeriodLostAmout = 0;
+				double judgePeriodLostCost = 0;
+				double theoryYearWashCost = 0;
+				double theoryTotalCost = 0;
+				
+				
+				Map bestWashPeriodMap = (Map)reqDataList.get(9);
+				bestWashPeriodMap.put("item_2", String.format("%.1f", theoryWashPeriod));
+				
+				Map yearBestWashCostMap = (Map)reqDataList.get(10);
+				yearBestWashCostMap.put("item_2", String.format("%.6f", theoryYearWashCost));
+				
+				Map yearBestLostAmoutCostMap = (Map)reqDataList.get(11);
+				yearBestLostAmoutCostMap.put("item_2", String.format("%.6f", judgePeriodLostCost));
+				
+				Map yearLowestSumCostMap = (Map)reqDataList.get(12);
+				double yearLowestSumCost = theoryYearWashCost + judgePeriodLostCost;
+				yearLowestSumCostMap.put("item_2", String.format("%.6f", yearLowestSumCost));
+				
+				Map suggestedNextWashDayMap = (Map)reqDataList.get(13);
+				Date startDate = TimeConvertor.stringTime2Date(st, TimeConvertor.FORMAT_SLASH_DAY);
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(startDate);
+				cal.add(Calendar.DATE, (int)theoryWashPeriod);
+				String nextWashDate = TimeConvertor.date2String(cal.getTime(), TimeConvertor.FORMAT_SLASH_DAY);
+				suggestedNextWashDayMap.put("item_2", nextWashDate);
+				
+				LOGGER.info("[calcReportData] result: " + reqDataList);
+				return reqDataList;
+			} catch (Exception e) {
+				LOGGER.error("[calcReportData] error",  e);
+			}
+			return allList;
+		} else {
+			LOGGER.warn("[calcReportData] ORI_DATA_DIR not exist");
+			return allList;
+		}
+	}
+	
+	public double getStaticDataFromMap (List oriData, int line, int col)
+	throws Exception {
+		try {
+			String[] one = (String[])oriData.get(line);
+			String v = one[col];
+			double d = Double.parseDouble(v);
+			return d;
+		} catch (Exception e) {
+			LOGGER.error("[getStaticDataFromMap] error line is:" + line + "\tcol" + col,  e);
+			throw new Exception("原始数据不正确，行号：" + (line+1));
 		}
 	}
 	
@@ -336,11 +486,9 @@ public class DataServiceImpl {
 		LOGGER.info("[saveStaticXls] start appBseDir " + appBseDir);
 		List<List<String>> data = new ArrayList<List<String>>();
 		List<String> heads = new ArrayList<String>();
-		heads.add(Constants.EXCEL_CONTS_STATIC_comment);
-		heads.add(Constants.EXCEL_CONTS_STATIC_ratio);
-		heads.add(Constants.EXCEL_CONTS_STATIC_data);
-		heads.add(Constants.EXCEL_CONTS_STATIC_unit);
-		heads.add(Constants.EXCEL_CONTS_STATIC_source);
+		heads.add(Constants.EXCEL_CONTS_STATIC_itemname);
+		heads.add(Constants.EXCEL_CONTS_STATIC_decuderesult);
+		heads.add(Constants.EXCEL_CONTS_STATIC_itemunit);
 		data.add(heads);
 		
 		Collection dataJ = (Collection) paraMap.get("data");
@@ -348,11 +496,9 @@ public class DataServiceImpl {
 		while (dataIt.hasNext()) {
 			Map line = (Map)dataIt.next();
 			List<String> one = new ArrayList<String>();
-			one.add(getStr(line, Constants.JSON_CONTS_STATIC_comment));
-			one.add(getStr(line, Constants.JSON_CONTS_STATIC_ratio));
-			one.add(getStr(line, Constants.JSON_CONTS_STATIC_data));
-			one.add(getStr(line, Constants.JSON_CONTS_STATIC_unit));
-			one.add(getStr(line, Constants.JSON_CONTS_STATIC_source));
+			one.add(getStr(line, "item_1"));
+			one.add(getStr(line, "item_2"));
+			one.add(getStr(line, "item_3"));
 			data.add(one);
 		}
 		// In case of one user handle data on two different terminals at the same time

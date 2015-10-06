@@ -51,6 +51,10 @@ public class Constants {
     public static final String EXCEL_CONTS_STATIC_data =  "数值";
     public static final String EXCEL_CONTS_STATIC_unit =  "单位";
     public static final String EXCEL_CONTS_STATIC_source =  "参数来源";
+    
+    public static final String EXCEL_CONTS_STATIC_itemname =  "指标名称";
+    public static final String EXCEL_CONTS_STATIC_decuderesult =  "推演结果";
+    public static final String EXCEL_CONTS_STATIC_itemunit =  "指标单位";
      
     public static final String JSON_CONTS_STATIC_comment = "comment";
     public static final String JSON_CONTS_STATIC_ratio = "ratio";
