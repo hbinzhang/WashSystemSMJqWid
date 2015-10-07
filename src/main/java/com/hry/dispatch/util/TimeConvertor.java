@@ -26,6 +26,7 @@ public class TimeConvertor {
 	
 	public static final String FORMAT_ORACLE_SLASH_24HOUR = "yyyy/mm/dd hh24:mi:ss";
 
+	public static final String JQWIDGET_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.S";
 	
 	public static final String FORMAT_24HOUR = "HH:mm:ss";
 

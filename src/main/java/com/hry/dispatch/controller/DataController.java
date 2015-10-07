@@ -2,6 +2,8 @@ package com.hry.dispatch.controller;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +28,7 @@ import com.hry.dispatch.domain.User;
 import com.hry.dispatch.service.UserServiceI;
 import com.hry.dispatch.service.impl.DataServiceImpl;
 import com.hry.dispatch.util.Constants;
+import com.hry.dispatch.util.TimeConvertor;
 
 @Controller
 public class DataController {
@@ -155,14 +158,18 @@ public class DataController {
 				return new Message("-1", "错误", "未登录，请从新登陆！");
 			}
 			try {
-				dataService.saveStaticXls(paraMap, u.getUserName());
+				String time = TimeConvertor.date2String(new Date(), TimeConvertor.FORMAT_NONSYMBOL_24HOUR);
+				String fileName = Constants.FILE_CONTS_CALC_EXPORT_NAME_XLS + time + Constants.EXT_NAME_XLS;
+				LOGGER.info("[staticDownload] fileName is: " + fileName);
+				dataService.saveStaticXls(paraMap, u.getUserName(), fileName);
+				
+				Message ret = new Message("1", fileName, "成功");
+				LOGGER.info("[staticDownload] return: " + ret);
+				return ret;
 			} catch (Exception e) {
 				LOGGER.error("[staticDownload] download error", e);
 				return new Message("-1", "错误", "服务器异常！");
 			}
-			Message ret = new Message("1", "成功", "成功");
-			LOGGER.info("[staticDownload] return: " + ret);
-			return ret;
 	}
 	
 	@RequestMapping(value = "/static/calcReportData", method=RequestMethod.POST, 
@@ -174,7 +181,7 @@ public class DataController {
 			// save to user/<username>/calcData.json and user/<username>/calcData.xls
 			User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
 			if (u == null) {
-				LOGGER.info("[staticDownload] user is null");
+				LOGGER.info("[calcReportData] user is null");
 				return new Message("-1", "错误", "未登录，请从新登陆！");
 			}
 			try {
@@ -185,6 +192,30 @@ public class DataController {
 				return ret;
 			} catch (Exception e) {
 				LOGGER.error("[calcReportData] download error", e);
+				return new Message("-1", "错误", "服务器异常！");
+			}
+	}
+	
+	@RequestMapping(value = "/static/calcDeduceData", method=RequestMethod.POST, 
+			headers = {"content-type=application/json","content-type=application/xml"})
+	public @ResponseBody Message calcDeduceData(@RequestBody Map<String, ? extends Object> paraMap, 
+			@RequestParam("stationName") String stationName, 
+			HttpServletRequest request) {
+			LOGGER.info("[calcDeduceData] start stationName is: " + stationName + "\nparaMap is:" + paraMap);
+			// save to user/<username>/calcData.json and user/<username>/calcData.xls
+			User u = (User)request.getSession().getAttribute(Constants.SESSION_KEY_USER_INFO);
+			if (u == null) {
+				LOGGER.info("[calcDeduceData] user is null");
+				return new Message("-1", "错误", "未登录，请从新登陆！");
+			}
+			try {
+				List res = dataService.calcDeduceData(paraMap, stationName, u.getUserName());
+				Message ret = new Message("1", "成功", "成功");
+				ret.setData(res);
+				LOGGER.info("[calcDeduceData] return: " + ret);
+				return ret;
+			} catch (Exception e) {
+				LOGGER.error("[calcDeduceData] download error", e);
 				return new Message("-1", "错误", "服务器异常！");
 			}
 	}

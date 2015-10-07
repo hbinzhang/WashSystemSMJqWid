@@ -306,7 +306,10 @@ public class DataServiceImpl {
 				Map stMap = (Map)reqDataList.get(2);
 				Map etMap = (Map)reqDataList.get(3);
 				String st = stMap.get("item_2").toString();
-				String et = stMap.get("item_2").toString();
+				String et = etMap.get("item_2").toString();
+				// 2015-11-20T16:00:00.000Z
+				st = formatJqwidgetTime(st);
+				et = formatJqwidgetTime(et);
 				int stIndex = -1;
 				int etIndex = -1;
 				int ind = 0;
@@ -314,6 +317,9 @@ public class DataServiceImpl {
 					Map t = new HashMap();
 					int si = line.length;
 					if (si > 0) {
+						if ( line[0].trim().equals("起始") ) {
+							stIndex = ind;
+						}
 						if ( line[0].trim().equals(st) ) {
 							stIndex = ind;
 						}
@@ -332,14 +338,11 @@ public class DataServiceImpl {
 					ind++;
 				}
 				LOGGER.info("[calcReportData] stIndex: " + stIndex + "\tetIndex: " + etIndex);
-				if (stIndex < 0) {
-					stIndex = 9;// 起始 行
-				}
 				double beiRate = getStaticDataFromMap(cont, 2, 1);
 				double calcIndex = getStaticDataFromMap(cont, 3, 1);
 				double chuanNum = getStaticDataFromMap(cont, 1, 1);
 				double elecPrice = getStaticDataFromMap(cont, 4, 1);
-				double onceWashCost = getStaticDataFromMap(cont, 5, 1);
+				double onceWashCost = getStaticDataFromMap(cont, 5, 1) / 10000.0;
 				
 				Map dayShouldAmoutMap = (Map)reqDataList.get(4);
 				double selecedDayWashData = getStaticDataFromMap(cont, etIndex, 1);
@@ -367,22 +370,27 @@ public class DataServiceImpl {
 				sumLostAmoutCostMap.put("item_2", String.format("%.6f", sumLostAmoutCost));
 				
 				// calc day
-				double firstValueModelBoard = 0;
-				double currentValueModelBoard = 0;
-				double dayCount = 0;
-				double firstValueJudgeBoard = 0;
-				double currentValueJudgeBoard = 0;
+				double firstValueModelBoard = startDayWashData;
+				double currentValueModelBoard = selecedDayWashData;
+				double dayCount = (etIndex - stIndex);
+				double firstValueJudgeBoard = getStaticDataFromMap(cont, stIndex, 2);
+				double currentValueJudgeBoard = selecedDaySampleData;
 				double costCheckPeriod = 365;
-				double dayAvgProcudeElecAmout = 0;
-				double dayFallIndex = 0;
-				double theoryWashPeriod = 0;
-				double theoryWashTimeYear = 0;
-				double washPeriodLostAmout = 0;
-				double judgePeriodLostAmout = 0;
-				double judgePeriodLostCost = 0;
-				double theoryYearWashCost = 0;
-				double theoryTotalCost = 0;
+				double dayAvgProcudeElecAmout = (currentValueModelBoard - firstValueModelBoard) * beiRate / dayCount * 50000 / 6 / 10000;
+				double dayFallIndex = (currentValueModelBoard - firstValueModelBoard - currentValueJudgeBoard - firstValueJudgeBoard) * 2 / (dayCount + 1) / currentValueModelBoard;
 				
+				double tmp_wholeyeareachdaywashsumcost = costCheckPeriod * onceWashCost;
+				double tmp_eachdayelecamoutlostcost = costCheckPeriod * elecPrice * dayAvgProcudeElecAmout * dayFallIndex / 2;
+				double tmp_wash_period_double = Math.sqrt(tmp_wholeyeareachdaywashsumcost / tmp_eachdayelecamoutlostcost);
+				double tmp_wash_period_int = Math.round(tmp_wash_period_double);
+				
+				double theoryWashPeriod = tmp_wash_period_int;
+				double theoryWashTimeYear = costCheckPeriod / theoryWashPeriod;
+				double washPeriodLostAmout = theoryWashPeriod  * dayFallIndex * (theoryWashPeriod + 1) / 2 * dayAvgProcudeElecAmout;
+				double judgePeriodLostAmout = theoryWashTimeYear * washPeriodLostAmout;
+				double judgePeriodLostCost = judgePeriodLostAmout * elecPrice;
+				double theoryYearWashCost = onceWashCost * costCheckPeriod / theoryWashPeriod;
+				double theoryTotalCost = judgePeriodLostCost + theoryYearWashCost;
 				
 				Map bestWashPeriodMap = (Map)reqDataList.get(9);
 				bestWashPeriodMap.put("item_2", String.format("%.1f", theoryWashPeriod));
@@ -394,8 +402,7 @@ public class DataServiceImpl {
 				yearBestLostAmoutCostMap.put("item_2", String.format("%.6f", judgePeriodLostCost));
 				
 				Map yearLowestSumCostMap = (Map)reqDataList.get(12);
-				double yearLowestSumCost = theoryYearWashCost + judgePeriodLostCost;
-				yearLowestSumCostMap.put("item_2", String.format("%.6f", yearLowestSumCost));
+				yearLowestSumCostMap.put("item_2", String.format("%.6f", theoryTotalCost));
 				
 				Map suggestedNextWashDayMap = (Map)reqDataList.get(13);
 				Date startDate = TimeConvertor.stringTime2Date(st, TimeConvertor.FORMAT_SLASH_DAY);
@@ -413,6 +420,150 @@ public class DataServiceImpl {
 			return allList;
 		} else {
 			LOGGER.warn("[calcReportData] ORI_DATA_DIR not exist");
+			return allList;
+		}
+	}
+	
+	public String formatJqwidgetTime(String jqTime) {
+		if (!jqTime.contains("T") && !jqTime.contains("Z")) {
+			return jqTime;
+		}
+		jqTime = jqTime.replaceAll("Z", "");
+		jqTime = jqTime.replaceAll("T", " ");
+		Date jqTimeDate = TimeConvertor.stringTime2Date(jqTime, TimeConvertor.JQWIDGET_TIME_FORMAT);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(jqTimeDate);
+		cal.add(Calendar.HOUR, 8);
+		return TimeConvertor.date2String(cal.getTime(), TimeConvertor.FORMAT_SLASH_DAY);
+	}
+	
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public List calcDeduceData(Map<String, ? extends Object> paraMap, 
+			String sName, String uName) {
+		String appBseDir = System.getProperty("app.base.dir");
+		String userInfoFile = appBseDir + File.separator + 
+ 				Constants.USER_INFO_DIR + File.separator + uName + File.separator + Constants.ORI_DATA_DIR;
+		File f = new File(userInfoFile);
+		List allList = new ArrayList();
+		if (f.isDirectory()) {
+			String fPath = userInfoFile + File.separator + sName + Constants.EXT_NAME_XLS;
+			try {
+				List cont = readExcel(fPath);
+				if (cont == null || cont.size() == 0) {
+					LOGGER.warn("[calcDeduceData] cont is null");
+					return allList;
+				}
+				List reqDataList = (List)paraMap.get("data");
+				Map stMap = (Map)reqDataList.get(2);
+				Map etMap = (Map)reqDataList.get(3);
+				String st = stMap.get("item_2").toString();
+				String et = etMap.get("item_2").toString();
+				st = formatJqwidgetTime(st);
+				et = formatJqwidgetTime(et);
+				int stIndex = -1;
+				int etIndex = -1;
+				int ind = 0;
+				for (String[] line : (List<String[]>)cont) {
+					Map t = new HashMap();
+					int si = line.length;
+					if (si > 0) {
+						if ( line[0].trim().equals("起始") ) {
+							stIndex = ind;
+						}
+						if ( line[0].trim().equals(st) ) {
+							stIndex = ind;
+						}
+						if ( line[0].trim().equals(et) ) {
+							etIndex = ind;
+						}
+						t.put("item_1", line[0]);
+					}
+					if (si > 1) {
+						t.put("item_2", line[1]);
+					}
+					if (si > 2) {
+						t.put("item_3", line[2]);
+					}
+					allList.add(t);
+					ind++;
+				}
+				LOGGER.info("[calcDeduceData] stIndex: " + stIndex + "\tetIndex: " + etIndex);
+				double beiRate = getStaticDataFromMap(cont, 2, 1);
+				double calcIndex = getStaticDataFromMap(cont, 3, 1);
+				double chuanNum = getStaticDataFromMap(cont, 1, 1);
+				double elecPrice = getStaticDataFromMap(cont, 4, 1);
+				double onceWashCost = getStaticDataFromMap(cont, 5, 1) / 10000.0;;
+				
+				Map dayShouldAmoutMap = (Map)reqDataList.get(4);
+				double selecedDayWashData = getStaticDataFromMap(cont, etIndex, 1);
+				double selecedLastDayWashData = getStaticDataFromMap(cont, etIndex-1, 1);
+				double dayShouldAmout = (selecedDayWashData - selecedLastDayWashData) * beiRate * chuanNum;
+				dayShouldAmoutMap.put("item_2", String.format("%.6f", dayShouldAmout));
+				
+				Map dayActualAmoutMap = (Map)reqDataList.get(5);
+				double selecedDaySampleData = getStaticDataFromMap(cont, etIndex, 2);
+				double selecedLastDaySampleData = getStaticDataFromMap(cont, etIndex-1, 2);
+				double dayActualAmout = (selecedDaySampleData - selecedLastDaySampleData) * beiRate * chuanNum;
+				dayActualAmoutMap.put("item_2", String.format("%.6f", dayActualAmout));
+				
+				Map dayLostAmoutMap = (Map)reqDataList.get(6);
+				double dayLostAmout = (dayShouldAmout - dayActualAmout);
+				dayLostAmoutMap.put("item_2", String.format("%.6f", dayLostAmout));
+				
+				Map sumLostAmoutMap = (Map)reqDataList.get(7);
+				double startDayWashData = getStaticDataFromMap(cont, stIndex, 1);
+				double sumLostAmout = (selecedDayWashData - startDayWashData - selecedDaySampleData + selecedLastDaySampleData) * beiRate * chuanNum;
+				sumLostAmoutMap.put("item_2", String.format("%.6f", sumLostAmout));
+				
+				Map sumLostAmoutCostMap = (Map)reqDataList.get(8);
+				double sumLostAmoutCost = sumLostAmout * elecPrice;
+				sumLostAmoutCostMap.put("item_2", String.format("%.6f", sumLostAmoutCost));
+				
+				// calc day
+				double firstValueModelBoard = startDayWashData;
+				double currentValueModelBoard = selecedDayWashData;
+				double dayCount = (etIndex - stIndex);
+				double firstValueJudgeBoard = getStaticDataFromMap(cont, stIndex, 2);
+				double currentValueJudgeBoard = selecedDaySampleData;
+				double costCheckPeriod = 365;
+				double dayAvgProcudeElecAmout = (currentValueModelBoard - firstValueModelBoard) * beiRate / dayCount * 50000 / 6 / 10000;
+				double dayFallIndex = (currentValueModelBoard - firstValueModelBoard - currentValueJudgeBoard - firstValueJudgeBoard) * 2 / (dayCount + 1) / currentValueModelBoard;
+				
+				Map hyperciWashPeriodMap = (Map)reqDataList.get(9);
+				double hyperciWashPeriod = Double.parseDouble(hyperciWashPeriodMap.get("item_2").toString());
+				double theoryWashTimeYear = costCheckPeriod / hyperciWashPeriod;
+				double washPeriodLostAmout = hyperciWashPeriod * dayFallIndex * (hyperciWashPeriod + 1) / 2 * dayAvgProcudeElecAmout;
+				double judgePeriodLostAmout = washPeriodLostAmout * theoryWashTimeYear;
+				double judgePeriodLostCost = judgePeriodLostAmout * elecPrice;
+				double theoryYearWashCost = onceWashCost * theoryWashTimeYear;
+				double theoryTotalCost = judgePeriodLostCost + theoryYearWashCost;
+				
+				Map yearBestWashCostMap = (Map)reqDataList.get(10);
+				yearBestWashCostMap.put("item_2", String.format("%.6f", theoryWashTimeYear));
+				
+				Map washPeriodLostAmoutMap = (Map)reqDataList.get(11);
+				washPeriodLostAmoutMap.put("item_2", String.format("%.6f", washPeriodLostAmout));
+				
+				Map judgePeriodLostAmoutMap = (Map)reqDataList.get(12);
+				judgePeriodLostAmoutMap.put("item_2", String.format("%.6f", judgePeriodLostAmout));
+				
+				Map judgePeriodLostCostMap = (Map)reqDataList.get(13);
+				judgePeriodLostCostMap.put("item_2", String.format("%.6f", judgePeriodLostCost));
+				
+				Map theoryYearWashCostMap = (Map)reqDataList.get(14);
+				theoryYearWashCostMap.put("item_2", String.format("%.6f", theoryYearWashCost));
+				
+				Map theoryTotalCostMap = (Map)reqDataList.get(15);
+				theoryTotalCostMap.put("item_2", String.format("%.6f", theoryTotalCost));
+				
+				LOGGER.info("[calcDeduceData] result: " + reqDataList);
+				return reqDataList;
+			} catch (Exception e) {
+				LOGGER.error("[calcDeduceData] error",  e);
+			}
+			return allList;
+		} else {
+			LOGGER.warn("[calcDeduceData] ORI_DATA_DIR not exist");
 			return allList;
 		}
 	}
@@ -480,7 +631,7 @@ public class DataServiceImpl {
 		}
 	}
 	
-	public void saveStaticXls(Map<String, ? extends Object> paraMap, String uname)
+	public void saveStaticXls(Map<String, ? extends Object> paraMap, String uname, String fileName)
 	throws Exception {
 		String appBseDir = System.getProperty("app.base.dir");
 		LOGGER.info("[saveStaticXls] start appBseDir " + appBseDir);
@@ -505,7 +656,7 @@ public class DataServiceImpl {
 		Lock l = LockCache.acquire(uname);
 		synchronized(l) {
 			writeExcel(data, appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + uname + File.separator +
-				Constants.FILE_CONTS_CALC_STATIC_DATA_XLS);
+					fileName);
 		}
 	}
 	

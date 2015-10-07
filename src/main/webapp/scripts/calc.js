@@ -59,15 +59,52 @@ $(document).ready(function () {
     //$('#splitContainer').jqxSplitter({ theme: themeConstant, height: 750, width: '100%', disabled: true, orientation: 'horizontal', panels: [{ size: 60 }, { size: 800 }] });
     $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: 1010,  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
     $("#tabswidget").jqxTabs({ theme: themeConstant,  height: '100%', width: '100%', animationType: 'fade' });
-    var setStartTime = function() {
-    	$("#staticGrid").jqxGrid('setcellvalue', 2, 'item_2', startDate);
-    	$("#staticGrid").jqxGrid('setcellvalue', 3, 'item_2', endDate);
+    
+    var date2str = function (yy, mm, dd,n) {
+        var s, d, t, t2;
+        t = Date.UTC(yy, mm, dd);
+        t2 = n * 1000 * 3600 * 24;
+        t+= t2;
+        d = new Date(t);
+        s = d.getUTCFullYear() + "/";
+        s += ("00"+(d.getUTCMonth()+1)).slice(-2) + "/";
+        s += ("00"+d.getUTCDate()).slice(-2);
+        return s;
     };
     
+    var DateAddDay = function(str,n){   
+    	  var   dd, mm, yy;   
+    	  var   reg = /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/;
+    	  if (arr = str.match(reg)) {
+    	    yy = Number(arr[1]);
+    	    mm = Number(arr[2])-1;
+    	    dd = Number(arr[3]);
+    	  } else {
+    	    var d = new Date();
+    	    yy = d.getUTCFullYear();
+    	    mm = ("00"+(d.getUTCMonth())).slice(-2);
+    	    dd = ("00"+d.getUTCDate()).slice(-2);
+    	  }
+    	  return date2str(yy, mm, dd,n);
+    };
+    
+    var setStartTime1 = function() {
+    	var destStartDate = DateAddDay(startDate, -1);
+    	$("#staticGrid").jqxGrid('setcellvalue', 2, 'item_2', destStartDate);
+    	$("#staticGrid").jqxGrid('setcellvalue', 3, 'item_2', endDate);
+    };
+    var setStartTime2 = function() {
+    	var destStartDate = DateAddDay(startDate, -1);
+    	$("#deduceGrid").jqxGrid('setcellvalue', 2, 'item_2', destStartDate);
+    	$("#deduceGrid").jqxGrid('setcellvalue', 3, 'item_2', endDate);
+    };
     $('#tabswidget').on('tabclick', function (event) { 
     	var clickedItem = event.args.item;
     	if (clickedItem == 1) {
-    		setTimeout(setStartTime, 2000); 
+    		setTimeout(setStartTime1, 1000); 
+    	}
+    	if (clickedItem == 2) {
+    		setTimeout(setStartTime2, 1000); 
     	}
     }); 
     $("#leftPanel").jqxPanel({theme: themeConstant, width: '100%', height: '100%'});
@@ -257,7 +294,7 @@ $(document).ready(function () {
             
             var dataSta = [
             	];
-            var dataStaUrl = 'data/user/gjdw/stadata.json';
+            var dataStaUrl = 'data/user/stadata.json';
             var sourceSta = 
             {
                 //localdata: dataSta,
@@ -312,9 +349,9 @@ $(document).ready(function () {
                              return true;
 
                           var year = value.getFullYear();
-                          if (year >= 2015) {
-                              return { result: false, message: "选择的日期必须处于光伏原始数据时间段内" };
-                          }
+//                          if (year >= 2016) {
+//                              return { result: false, message: "选择的日期必须处于光伏原始数据时间段内" };
+//                          }
                           return true;
                       }
                   },
@@ -384,7 +421,7 @@ $(document).ready(function () {
                     	    dataType:'json',    
                     	    success:function(data) {    
                     	        if(data.code == '1'){    
-                    	        	window.location.href='./data/user/' + currentuser+ '/staticResult.xls';
+                    	        	window.location.href='./data/user/' + currentuser+ '/' + data.result;
                     	        }else{    
                     	        	alert("下载异常！" + data.message);
                     	        }  
@@ -396,7 +433,7 @@ $(document).ready(function () {
                     });
                     
                     calcButton.click(function (event) {
-                    	var rows = $('#staticGrid').jqxGrid('getrows');
+                    	var rows = $('#staticGrid').jqxGrid('getboundrows');
                     	if(rows[2].item_2 == '' || rows[2].item_2 == '--' ) {
                     		alert("请选择起始日期");
                     		return;
@@ -420,6 +457,150 @@ $(document).ready(function () {
                     	    		for (var i = 4; i < 14; i++) {
                     	    			var dd = data.data[i].item_2;
                     	    			$("#staticGrid").jqxGrid('setcellvalue', i, 'item_2', dd);
+                    	    		}
+                    	    		
+                    	        }else{    
+                    	        	alert("计算异常！" + data.message);
+                    	        }  
+                    	    },    
+                    	    error : function() {    
+                    	         alert("计算异常！");    
+                    	    }    
+                    	});  
+                    });
+                }
+            });
+            
+            
+            // deduce calculate
+            var dataDeduceUrl = 'data/user/deducedata.json';
+            var sourceDeduce = 
+            {
+                //localdata: dataSta,
+                url: dataDeduceUrl,
+                datatype: "json",
+                updaterow: function (rowid, rowdata, commit) {
+                    commit(true);
+                },
+                datafields:
+                [
+	                { name: 'item_1', type: 'string'},
+					{ name: 'item_2', type: 'string'},
+					{ name: 'item_3', type: 'string'}
+                ]
+            };
+
+            var dataAdapterDeduce = new $.jqx.dataAdapter(sourceDeduce);
+
+            var begineditDeduce = function(row, datafield, columntype) {  
+                if ((row == 2) || (row == 3)) {  
+                    return true;  
+                } else {
+                	return false;
+                }
+            };  
+            
+            // initialize jqxGrid
+            $("#deduceGrid").jqxGrid(
+            {
+            	theme: themeConstant,
+            	width: 1000,
+                height: 715,
+                source: dataAdapterDeduce,
+                enabletooltips: true,
+                editable : true,
+                selectionmode: 'multiplecellsadvanced',
+                columnsresize: true,
+                columns: [
+                  { text: '指标名称', columntype: 'textbox', editable : false, datafield: 'item_1', width: 360},
+                  { text: '推演结果', columntype: 'textbox', editable : true, datafield: 'item_2', width: 320, cellbeginedit: begineditDeduce,columntype: 'datetimeinput', cellsformat: 'yyyy/M/d',
+                	  validation: function (cell, value) {
+                          if (value == "")
+                             return true;
+
+                          var year = value.getFullYear();
+//                          if (year >= 2016) {
+//                              return { result: false, message: "选择的日期必须处于光伏原始数据时间段内" };
+//                          }
+                          return true;
+                      }
+                  },
+                  { text: '指标单位', columntype: 'textbox', editable : false, datafield: 'item_3', width: 320 }
+                 
+                ],
+                
+                showtoolbar: true,
+                toolbarheight : 40,
+                rendertoolbar: function (statusbar) {
+                    // appends buttons to the status bar.
+                    var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
+                    var deduceInput = $("<div id='bytimeinput'  style='float: left; margin-left: 5px;margin-top: 2px;'><input type='text' id='deduceInput'/></div>");
+                    var dlButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowdown.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>下载记录</span></div>");
+                    var calcButton = $("<div style='float: left; margin-left: 25px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/search.png'/><span style='margin-left: 4px; position: relative; top: -3px;'>计算结果</span></div>");
+                    container.append(deduceInput);
+                    container.append(calcButton);
+                    container.append(dlButton);
+                    statusbar.append(container);
+                    deduceInput.jqxInput({theme: themeConstant,placeHolder: "请输入假设清洗周期", height: 25, width: 150, minLength: 1});
+                    dlButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
+                    calcButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
+                    
+                    // reload grid data.
+                    dlButton.click(function (event) {
+                    	var rows = $('#deduceGrid').jqxGrid('getrows');
+                    	var jsonpara = JSON.stringify({"data":rows});
+                    	var aj = $.ajax( {    
+                    	    url:'static/download',// 跳转到 action    
+                    	    type:'post',    
+                    	    contentType : 'application/json',
+                    	    async : false,
+                    	    cache:false,    
+                    	    data: jsonpara,
+                    	    dataType:'json',    
+                    	    success:function(data) {    
+                    	        if(data.code == '1'){    
+                    	        	window.location.href='./data/user/' + currentuser+ '/' + data.result;
+                    	        }else{    
+                    	        	alert("下载异常！" + data.message);
+                    	        }  
+                    	     },    
+                    	     error : function() {    
+                    	          alert("下载失败！");
+                    	     }    
+                    	});  
+                    });
+                    
+                    calcButton.click(function (event) {
+                    	var deduceInputVal = $("#deduceInput").val();
+                		if (deduceInputVal == null || deduceInputVal == "" || deduceInputVal == "请输入假设清洗周期") {
+                			alert("请输入假设清洗周期");
+                			return;
+                		}
+                		$("#deduceGrid").jqxGrid('setcellvalue', 9, 'item_2', deduceInputVal);
+                    	var rows = $('#deduceGrid').jqxGrid('getrows');
+                    	if(rows[2].item_2 == '' || rows[2].item_2 == '--' ) {
+                    		alert("请选择起始日期");
+                    		return;
+                    	}
+                    	if(rows[3].item_2 == '' || rows[3].item_2 == '--' ) {
+                    		alert("请选择评价日期");
+                    		return;
+                    	}
+                    	var jsonpara = JSON.stringify({"data":rows});
+                    	var len = rows.length;
+                    	var aj = $.ajax( {    
+                    	    url:'static/calcDeduceData?stationName='+selectedStation,  
+                    	    contentType : 'application/json',
+                    	    data: jsonpara,
+                    	    type:'post',    
+                    	    cache:false,    
+                    	    dataType:'json',    
+                    	    success:function(data) {
+                    	    	if(data.code == '1'){  
+                    	    		// update data manually
+                    	    		for (var i = 4; i < 16; i++) {
+                    	    			var dd = data.data[i].item_2;
+                    	    			$("#deduceGrid").jqxGrid('setcellvalue', i, 'item_2', dd);
                     	    		}
                     	    		
                     	        }else{    
