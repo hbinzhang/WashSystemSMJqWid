@@ -57,7 +57,7 @@ $(document).ready(function () {
 	$("#hellolabel").text('您好，' + currentuserDispName);
 //	$("#hellolabel").text('');
     //$('#splitContainer').jqxSplitter({ theme: themeConstant, height: 750, width: '100%', disabled: true, orientation: 'horizontal', panels: [{ size: 60 }, { size: 800 }] });
-    $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: 1010,  panels: [{ size: 950,collapsible: false }, { size: 200, collapsed : true}] });
+    $('#splitter').jqxSplitter({ splitBarSize: 5, theme: themeConstant, height: 750, width: 1010,  panels: [{ size: 550,collapsible: false }, { size: 550, collapsed : true}] });
     $("#tabswidget").jqxTabs({ theme: themeConstant,  height: '100%', width: '100%', animationType: 'fade' });
     
     var date2str = function (yy, mm, dd,n) {

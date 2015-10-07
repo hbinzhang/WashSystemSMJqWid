@@ -263,22 +263,48 @@ public class DataServiceImpl {
 					return allMap;
 				}
 				for (String[] line : (List<String[]>)cont) {
+					boolean allNull = true;
 					Map t = new HashMap();
 					int si = line.length;
+					if (si == 0) {
+						continue;
+					}
 					if (si > 0) {
 						t.put("item_1", line[0]);
+						if (line[0].trim().length() > 0) {
+							allNull = false;
+						}
 					}
 					if (si > 1) {
 						t.put("item_2", line[1]);
+						if (line[1].trim().length() > 0) {
+							allNull = false;
+						}
 					}
 					if (si > 2) {
 						t.put("item_3", line[2]);
+						if (line[2].trim().length() > 0) {
+							allNull = false;
+						}
 					}
-					allMap.add(t);
+					if (!allNull) {
+						allMap.add(t);
+					}
 				}
 			} catch (Exception e) {
 				LOGGER.error("[getStationData] error",  e);
 			}
+			// add sep null line
+			Map t1 = new HashMap();
+			t1.put("item_1", "");
+			t1.put("item_2", "");
+			t1.put("item_3", "");
+			allMap.add(6, t1);
+			Map t2 = new HashMap();
+			t2.put("item_1", "");
+			t2.put("item_2", "");
+			t2.put("item_3", "");
+			allMap.add(8, t2);
 			return allMap;
 		} else {
 			LOGGER.warn("[getStationData] ORI_DATA_DIR not exist");

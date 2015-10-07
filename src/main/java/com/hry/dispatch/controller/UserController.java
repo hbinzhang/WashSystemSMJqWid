@@ -86,6 +86,18 @@ public class UserController {
 		try {
 			LOGGER.info("[logout] logout " + userName);
 			request.getSession().removeAttribute(Constants.SESSION_KEY_USER_INFO);
+			// remove tmp files
+			String appBseDir = System.getProperty("app.base.dir");
+			String path = appBseDir + File.separator + Constants.USER_INFO_DIR + File.separator + userName + File.separator;
+			File dir = new File(path);
+			String[] fs = dir.list();
+			for (String f : fs) {
+				if (f.startsWith(Constants.FILE_CONTS_CALC_EXPORT_NAME_XLS)) {
+					File ft = new File(path + f);
+					ft.delete();
+					LOGGER.info("[logout] delete file: " + (path + f));
+				}
+			}
 			return new Message("1","Logout success","登出成功");
 		} catch (Exception e) {
 			LOGGER.info("[logout] error ", e);
