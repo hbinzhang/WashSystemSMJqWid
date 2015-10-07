@@ -65,7 +65,7 @@ public class Constants {
 	public static final String FILE_CONTS_CALC_DATA = "calcData.json";
 	public static final String FILE_CONTS_CALC_DATA_XLS = "calcData.xls";
 	public static final String FILE_CONTS_CALC_STATIC_DATA_XLS = "staticResult.xls";
-	public static final String FILE_CONTS_CALC_EXPORT_NAME_XLS = "结果导出";
+	public static final String FILE_CONTS_CALC_EXPORT_NAME_XLS = "ShuJuDaoChu";
 	
 	public static final String JSON_GET_STATIONS_KEY ="name";
 
