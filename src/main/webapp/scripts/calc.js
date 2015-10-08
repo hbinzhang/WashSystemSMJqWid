@@ -5,6 +5,12 @@ var currentuserCompEs = "";
 var calcByDay = true;
 var needloadgriddata = true;
 
+var selectedStation = '';
+var stationSelectionData = [];
+var url;
+selectedStation = stationSelectionData[0];
+var source;
+
 $(document).ready(function () {
 	var aj = $.ajax( {    
 	    url:'user/getCurrentUser',    
@@ -125,7 +131,7 @@ $(document).ready(function () {
     ////$('#fourth').attr('dock', 'left');
     var startDate = '';
     var endDate = '';
-    var selectedStation = '';
+    
     
     $('#titleLabel').jqxDockPanel('render');   
     // prepare the data
@@ -135,8 +141,7 @@ $(document).ready(function () {
             	item_3 : '-'}
             	];
             
-            var stationSelectionData = [
-            ];
+            var selectionHtmlVar = '<select onchange="selectStation(this)">';
             
             var aj = $.ajax( {    
         	    url:'data/stations',// 跳转到 action    
@@ -149,16 +154,20 @@ $(document).ready(function () {
         	    	var ss = data.data;
         	        for (var i = 0; i < ss.length; i++) {
         	        	stationSelectionData.push(ss[i].name);
+        	        	selectionHtmlVar += '<option value ="'+ss[i].name+'">'+ ss[i].name +'</option>';
         	        }
         	     },    
         	     error : function() {    
         	          alert("获取电站信息失败！");
         	     }    
         	});  
+            selectionHtmlVar += '</select">';
+            if (stationSelectionData.length > 0) {
+            	selectedStation = stationSelectionData[0];
+            }
             
-            var url = "./data/getStationData?stationName="+encodeURIComponent(stationSelectionData[0]);
-            selectedStation = stationSelectionData[0];
-            var source = 
+            url = "./data/getStationData?stationName="+encodeURIComponent(stationSelectionData[0]);
+            source = 
             {
                 //localdata: data,
                 datatype: "json",
@@ -172,11 +181,10 @@ $(document).ready(function () {
                 datafields:
                 [
                    { name: 'item_1', type: 'string'},
-				   { name: 'item_2', type: 'string'},
-				   { name: 'item_3', type: 'string'}
+            	   { name: 'item_2', type: 'string'},
+            	   { name: 'item_3', type: 'string'}
                 ]
             };
-
             var dataAdapter = new $.jqx.dataAdapter(source, {
             	loadComplete: function (data) { 
                     var dataLine = $('#jqxgrid').jqxGrid('getrowdata', 10);
@@ -186,7 +194,6 @@ $(document).ready(function () {
                     endDate = lastLine.item_1;
             	}
             });
-            
             // initialize jqxGrid
             $("#jqxgrid").jqxGrid(
             {
@@ -207,49 +214,48 @@ $(document).ready(function () {
                 toolbarheight : 40,
                 rendertoolbar: function (statusbar) {
                     // appends buttons to the status bar.
-                    var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-                    var stationSelection = $("<div id = 'stationSelection' style='float: left; margin-left: 5px;margin-top: 2px;'></div>");
+                    var container = $("<div style='overflow: hidden; position: relative; margin: 2px;'></div>");
+                    var stationSelection = $("<div id = 'stationSelection' style='float: left; margin-left: 10px;margin-top: 5px;'>"+selectionHtmlVar+"</div>");
                     var downldButton = $("<div style='float: left; margin-left: 5px;margin-bottom: 5px;'><img style='position: relative; margin-top: 2px;' src='./images/arrowdown.gif'/><span style='margin-left: 4px; position: relative; top: -3px;'>下载记录</span></div>");
 
                     container.append(stationSelection);
-                    
                     container.append(downldButton);
-                   
                     statusbar.append(container);
-                    stationSelection.jqxDropDownList({
-                    	autoOpen: true, 
-                    	source: stationSelectionData, 
-                    	selectedIndex: 1, 
-                    	placeHolder: "请选择电站:",
-                    	width: '200', 
-                    	height: '25'});
-                    if (stationSelectionData.length > 0) {
-                    	stationSelection.jqxDropDownList('selectItem', stationSelectionData[0] );
-                    }
+                    
+//                    stationSelection.jqxDropDownList({
+//                    	autoOpen: true, 
+//                    	source: stationSelectionData, 
+//                    	selectedIndex: 1, 
+//                    	placeHolder: "请选择电站:",
+//                    	width: '200', 
+//                    	height: '25'});
+//                    if (stationSelectionData.length > 0) {
+//                    	stationSelection.jqxDropDownList('selectItem', stationSelectionData[0] );
+//                    }
+                    
                     downldButton.jqxButton({  theme: themeConstant,width: 100, height: 20 });
                     
-                    stationSelection.on('select', function (event)
-                    		{
-                    		    var args = event.args;
-                    		    if (args) {
-                    		    // index represents the item's index.                
-                    		    var index = args.index;
-                    		    var item = args.item;
-                    		    // get item's label and value.
-                    		    var label = item.label;
-                    		    var value = item.value;
-                    		    // update table data
-                    		    source.url = "./data/getStationData?stationName="+encodeURIComponent(value);
-                    		    selectedStation = value;
-                    		    $('#jqxgrid').jqxGrid('updatebounddata');
-                    		}                        
-                    });
+//                    stationSelection.on('select', function (event)
+//                    		{
+//                    		    var args = event.args;
+//                    		    if (args) {
+//                    		    // index represents the item's index.                
+//                    		    var index = args.index;
+//                    		    var item = args.item;
+//                    		    // get item's label and value.
+//                    		    var label = item.label;
+//                    		    var value = item.value;
+//                    		    // update table data
+//                    		    source.url = "./data/getStationData?stationName="+encodeURIComponent(value);
+//                    		    selectedStation = value;
+//                    		    $('#jqxgrid').jqxGrid('updatebounddata');
+//                    		}                        
+//                    });
                     
                     downldButton.click(function (event) {
                     	var rows = $('#jqxgrid').jqxGrid('getrows');
                     	var jsonpara = JSON.stringify({"data":rows});
-                    	var item = stationSelection.jqxDropDownList('getSelectedItem'); 
-                    	window.location.href='./data/user/' + currentuser+ '/电站原始数据/' + item.value + '.xls';
+                    	window.location.href='./data/user/' + currentuser+ '/' + encodeURIComponent("电站原始数据") + '/' + encodeURIComponent(selectedStation) + '.xls';
                     	/*var aj = $.ajax( {    
                     	    url:'data/download', 
                     	    type:'post',    
@@ -842,6 +848,12 @@ function calcStaticData() {
 		// reverse calculate. need more specifications
 		
 	}
+}
+
+function selectStation(obj) {
+	source.url = "./data/getStationData?stationName="+encodeURIComponent(obj.value);
+    selectedStation = obj.value;
+    $('#jqxgrid').jqxGrid('updatebounddata');
 }
 
 function getStaticLineData(lineInd) {
