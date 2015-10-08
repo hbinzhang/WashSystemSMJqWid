@@ -96,13 +96,38 @@ $(document).ready(function () {
     
     var setStartTime1 = function() {
     	var destStartDate = DateAddDay(startDate, -1);
+    	var tmp = $("#jqxgrid").jqxGrid('getcellvalue', 1, 'item_2');
+    	
+    	$("#staticGrid").jqxGrid('setcellvalue', 1, 'item_2', tmp);
     	$("#staticGrid").jqxGrid('setcellvalue', 2, 'item_2', destStartDate);
     	$("#staticGrid").jqxGrid('setcellvalue', 3, 'item_2', endDate);
     };
     var setStartTime2 = function() {
-    	var destStartDate = DateAddDay(startDate, -1);
-    	$("#deduceGrid").jqxGrid('setcellvalue', 2, 'item_2', destStartDate);
-    	$("#deduceGrid").jqxGrid('setcellvalue', 3, 'item_2', endDate);
+    	var bastPeriodTmp = $("#staticGrid").jqxGrid('getcellvalue', 9, 'item_2');
+    	if (bastPeriodTmp === undefined || bastPeriodTmp == null || bastPeriodTmp.length == 0) {
+    		alert("请先在统计计算结果页面完成计算！");
+    		return;
+    	}
+    	var tmp = $("#jqxgrid").jqxGrid('getcellvalue', 1, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', 1, 'item_2', tmp);
+    	
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 2, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', 2, 'item_2', tmp);
+    	
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 3, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', 3, 'item_2', tmp);
+    	
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 9, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', 5, 'item_2', tmp);
+    	
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 10, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', 6, 'item_2', tmp);
+    	
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 11, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', 7, 'item_2', tmp);
+    	
+    	tmp = $("#staticGrid").jqxGrid('getcellvalue', 12, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', 8, 'item_2', tmp);
     };
     $('#tabswidget').on('tabclick', function (event) { 
     	var clickedItem = event.args.item;
@@ -460,7 +485,10 @@ $(document).ready(function () {
                     	    success:function(data) {
                     	    	if(data.code == '1'){  
                     	    		// update data manually
-                    	    		for (var i = 4; i < 14; i++) {
+                    	    		for (var i = 1; i < 14; i++) {
+                    	    			if (i == 2 || i == 3) {
+                    	    				continue;
+                    	    			}
                     	    			var dd = data.data[i].item_2;
                     	    			$("#staticGrid").jqxGrid('setcellvalue', i, 'item_2', dd);
                     	    		}
@@ -547,7 +575,7 @@ $(document).ready(function () {
                     container.append(calcButton);
                     container.append(dlButton);
                     statusbar.append(container);
-                    deduceInput.jqxInput({theme: themeConstant,placeHolder: "请输入假设清洗周期", height: 25, width: 150, minLength: 1});
+                    deduceInput.jqxInput({theme: themeConstant,placeHolder: "请输入计划清洗周期", height: 25, width: 150, minLength: 1});
                     dlButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
                     calcButton.jqxButton({ theme: themeConstant,width: 100, height: 20 });
                     
@@ -582,7 +610,7 @@ $(document).ready(function () {
                 			alert("请输入假设清洗周期");
                 			return;
                 		}
-                		$("#deduceGrid").jqxGrid('setcellvalue', 9, 'item_2', deduceInputVal);
+                		$("#deduceGrid").jqxGrid('setcellvalue', 11, 'item_2', deduceInputVal);
                     	var rows = $('#deduceGrid').jqxGrid('getrows');
                     	if(rows[2].item_2 == '' || rows[2].item_2 == '--' ) {
                     		alert("请选择起始日期");
@@ -604,7 +632,7 @@ $(document).ready(function () {
                     	    success:function(data) {
                     	    	if(data.code == '1'){  
                     	    		// update data manually
-                    	    		for (var i = 4; i < 16; i++) {
+                    	    		for (var i = 12; i < 16; i++) {
                     	    			var dd = data.data[i].item_2;
                     	    			$("#deduceGrid").jqxGrid('setcellvalue', i, 'item_2', dd);
                     	    		}
