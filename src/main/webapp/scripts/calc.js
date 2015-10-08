@@ -156,7 +156,7 @@ $(document).ready(function () {
         	     }    
         	});  
             
-            var url = "./data/getStationData?stationName="+stationSelectionData[0];
+            var url = "./data/getStationData?stationName="+encodeURIComponent(stationSelectionData[0]);
             selectedStation = stationSelectionData[0];
             var source = 
             {
@@ -239,7 +239,7 @@ $(document).ready(function () {
                     		    var label = item.label;
                     		    var value = item.value;
                     		    // update table data
-                    		    source.url = "./data/getStationData?stationName="+value;
+                    		    source.url = "./data/getStationData?stationName="+encodeURIComponent(value);
                     		    selectedStation = value;
                     		    $('#jqxgrid').jqxGrid('updatebounddata');
                     		}                        
@@ -364,7 +364,7 @@ $(document).ready(function () {
                 rendertoolbar: function (statusbar) {
                     // appends buttons to the status bar.
                     var container = $("<div style='overflow: hidden; position: relative; margin: 5px;'></div>");
-                    var dropSelMode = $("<div id='dropSelMode' style='float: left; margin-left: 5px;margin-top: 0px;'>优化计算</div>");
+                    var dropSelMode = $("<div id='dropSelMode' style='float: left; margin-left: 5px;margin-top: 0px; z-index: 999;'>优化计算</div>");
                     var bytimeinput = $("<div id='bytimeinput'  style='float: left; margin-left: 5px;margin-top: 2px;'><input type='text' id='bytimeinput'/></div>");
                     var dropSelMode2 = $("<div id='dropSelMode2'  style='float: left; margin-left: 5px;margin-top: 7px;'>按结果反推</div>");
                     var byresultinput = $("<div id='byresultinput'  style='float: left; margin-left: 5px;margin-top: 0px;'><input type='text' id='byresultinput'/></div>");
@@ -445,7 +445,7 @@ $(document).ready(function () {
                     	var jsonpara = JSON.stringify({"data":rows});
                     	var len = rows.length;
                     	var aj = $.ajax( {    
-                    	    url:'static/calcReportData?stationName='+selectedStation,  
+                    	    url:'static/calcReportData?stationName='+encodeURIComponent(selectedStation),  
                     	    contentType : 'application/json',
                     	    data: jsonpara,
                     	    type:'post',    
@@ -589,7 +589,7 @@ $(document).ready(function () {
                     	var jsonpara = JSON.stringify({"data":rows});
                     	var len = rows.length;
                     	var aj = $.ajax( {    
-                    	    url:'static/calcDeduceData?stationName='+selectedStation,  
+                    	    url:'static/calcDeduceData?stationName='+encodeURIComponent(selectedStation),  
                     	    contentType : 'application/json',
                     	    data: jsonpara,
                     	    type:'post',    
