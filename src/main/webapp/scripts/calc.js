@@ -373,8 +373,8 @@ $(document).ready(function () {
                 selectionmode: 'multiplecellsadvanced',
                 columnsresize: true,
                 columns: [
-                  { text: '指标名称', columntype: 'textbox', editable : false, datafield: 'item_1', width: 360},
-                  { text: '推演结果', columntype: 'textbox', editable : true, datafield: 'item_2', width: 320, cellbeginedit: beginedit,columntype: 'datetimeinput', cellsformat: 'yyyy/M/d',
+                  { text: '指标名称', columntype: 'textbox', editable : false, datafield: 'item_1', width: 360},//columntype: 'datetimeinput',
+                  { text: '推演结果', columntype: 'textbox', editable : true, datafield: 'item_2', width: 320, cellbeginedit: beginedit, cellsformat: 'yyyy/MM/dd',
                 	  validation: function (cell, value) {
                           if (value == "")
                              return true;
@@ -384,7 +384,12 @@ $(document).ready(function () {
 //                              return { result: false, message: "选择的日期必须处于光伏原始数据时间段内" };
 //                          }
                           return true;
-                      }
+                      },
+                      cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
+                    	  if (row == 2 || row == 3) {
+                          	return '<span style="margin: 2px; float: ' + columnproperties.cellsalign + '; color: #ff0000;">' + defaulthtml + '</span>';
+                      	  }
+                      }   
                   },
                   { text: '指标单位', columntype: 'textbox', editable : false, datafield: 'item_3', width: 320 }
                  
@@ -546,8 +551,8 @@ $(document).ready(function () {
                 selectionmode: 'multiplecellsadvanced',
                 columnsresize: true,
                 columns: [
-                  { text: '指标名称', columntype: 'textbox', editable : false, datafield: 'item_1', width: 360},
-                  { text: '推演结果', columntype: 'textbox', editable : true, datafield: 'item_2', width: 320, cellbeginedit: begineditDeduce,columntype: 'datetimeinput', cellsformat: 'yyyy/M/d',
+                  { text: '指标名称', columntype: 'textbox', editable : false, datafield: 'item_1', width: 360},//columntype: 'datetimeinput', 
+                  { text: '推演结果', columntype: 'textbox', editable : true, datafield: 'item_2', width: 320, cellbeginedit: begineditDeduce,cellsformat: 'yyyy/MM/dd',
                 	  validation: function (cell, value) {
                           if (value == "")
                              return true;
@@ -557,7 +562,12 @@ $(document).ready(function () {
 //                              return { result: false, message: "选择的日期必须处于光伏原始数据时间段内" };
 //                          }
                           return true;
-                      }
+                      },
+                      cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
+                    	  if (row == 2 || row == 3) {
+                          	return '<span style="margin: 2px; float: ' + columnproperties.cellsalign + '; color: #ff0000;">' + defaulthtml + '</span>';
+                      	  }
+                      }   
                   },
                   { text: '指标单位', columntype: 'textbox', editable : false, datafield: 'item_3', width: 320 }
                  
@@ -632,11 +642,14 @@ $(document).ready(function () {
                     	    success:function(data) {
                     	    	if(data.code == '1'){  
                     	    		// update data manually
-                    	    		for (var i = 12; i < 16; i++) {
+                    	    		for (var i = 12; i < 15; i++) {
                     	    			var dd = data.data[i].item_2;
                     	    			$("#deduceGrid").jqxGrid('setcellvalue', i, 'item_2', dd);
                     	    		}
-                    	    		
+                    	    		var yearLowest = $("#deduceGrid").jqxGrid('getcellvalue', 8, 'item_2');
+                    	    		var yearPlan = $("#deduceGrid").jqxGrid('getcellvalue', 14, 'item_2');
+                    	    		var deducePeriodCost = yearPlan - yearLowest;
+                    	    		$("#deduceGrid").jqxGrid('setcellvalue', 15, 'item_2', deducePeriodCost.toFixed(2).toString());
                     	        }else{    
                     	        	alert("计算异常！" + data.message);
                     	        }  

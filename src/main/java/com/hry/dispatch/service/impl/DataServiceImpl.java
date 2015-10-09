@@ -19,11 +19,13 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hry.dispatch.domain.Message;
 import com.hry.dispatch.domain.Station;
-import com.hry.dispatch.util.*;
+import com.hry.dispatch.util.Constants;
+import com.hry.dispatch.util.Lock;
+import com.hry.dispatch.util.LockCache;
+import com.hry.dispatch.util.TimeConvertor;
 
 import jxl.Cell;
 import jxl.DateCell;
@@ -470,7 +472,7 @@ public class DataServiceImpl {
 				bestWashPeriodMap.put("item_2", String.format("%.0f", theoryWashPeriod));
 				
 				Map yearBestWashCostMap = (Map)reqDataList.get(10);
-				yearBestWashCostMap.put("item_2", String.format("%2f", theoryYearWashCost));
+				yearBestWashCostMap.put("item_2", String.format("%.2f", theoryYearWashCost));
 				
 				Map yearBestLostAmoutCostMap = (Map)reqDataList.get(11);
 				yearBestLostAmoutCostMap.put("item_2", String.format("%.2f", judgePeriodLostCost));
@@ -504,7 +506,13 @@ public class DataServiceImpl {
 		}
 		jqTime = jqTime.replaceAll("Z", "");
 		jqTime = jqTime.replaceAll("T", " ");
-		Date jqTimeDate = TimeConvertor.stringTime2Date(jqTime, TimeConvertor.JQWIDGET_TIME_FORMAT);
+		Date jqTimeDate = null;
+		if (jqTime.contains("000Z")) {
+			jqTimeDate = TimeConvertor.stringTime2Date(jqTime, TimeConvertor.JQWIDGET_TIME_FORMAT);
+		} else {
+			jqTimeDate = TimeConvertor.stringTime2Date(jqTime, TimeConvertor.FORMAT_MINUS_24HOUR);
+		}
+		
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(jqTimeDate);
 		cal.add(Calendar.HOUR, 8);
