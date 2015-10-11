@@ -423,13 +423,13 @@ public class DataServiceImpl {
 				Map dayShouldAmoutMap = (Map)reqDataList.get(4);
 				double selecedDayWashData = getStaticDataFromMap(cont, etIndex, 1);
 				double selecedLastDayWashData = getStaticDataFromMap(cont, etIndex-1, 1);
-				double dayShouldAmout = (selecedDayWashData - selecedLastDayWashData) * beiRate * chuanNum;
+				double dayShouldAmout = (selecedDayWashData - selecedLastDayWashData) * beiRate * chuanNum / 6;
 				dayShouldAmoutMap.put("item_2", String.format("%.2f", dayShouldAmout));
 				
 				Map dayActualAmoutMap = (Map)reqDataList.get(5);
 				double selecedDaySampleData = getStaticDataFromMap(cont, etIndex, 2);
 				double selecedLastDaySampleData = getStaticDataFromMap(cont, etIndex-1, 2);
-				double dayActualAmout = (selecedDaySampleData - selecedLastDaySampleData) * beiRate * chuanNum;
+				double dayActualAmout = (selecedDaySampleData - selecedLastDaySampleData) * beiRate * chuanNum / 6;
 				dayActualAmoutMap.put("item_2", String.format("%.2f", dayActualAmout));
 				
 				Map dayLostAmoutMap = (Map)reqDataList.get(6);
@@ -438,7 +438,8 @@ public class DataServiceImpl {
 				
 				Map sumLostAmoutMap = (Map)reqDataList.get(7);
 				double startDayWashData = getStaticDataFromMap(cont, stIndex, 1);
-				double sumLostAmout = (selecedDayWashData - startDayWashData - selecedDaySampleData + selecedLastDaySampleData) * beiRate * chuanNum;
+				double startDaySampleData = getStaticDataFromMap(cont, stIndex, 1);
+				double sumLostAmout = (selecedDayWashData - startDayWashData - selecedDaySampleData + startDaySampleData) * beiRate * chuanNum / 6;
 				sumLostAmoutMap.put("item_2", String.format("%.2f", sumLostAmout));
 				
 				Map sumLostAmoutCostMap = (Map)reqDataList.get(8);

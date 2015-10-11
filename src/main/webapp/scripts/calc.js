@@ -374,12 +374,18 @@ $(document).ready(function () {
                 columnsresize: true,
                 columns: [
                   { text: '指标名称', columntype: 'textbox', editable : false, datafield: 'item_1', width: 360},//columntype: 'datetimeinput',
-                  { text: '推演结果', columntype: 'textbox', editable : true, datafield: 'item_2', width: 320, cellbeginedit: beginedit, cellsformat: 'yyyy/MM/dd',
+                  { text: '推演结果', columntype: 'textbox', editable : true, datafield: 'item_2', width: 320, cellbeginedit: beginedit, 
                 	  validation: function (cell, value) {
                           if (value == "")
-                             return true;
-
-                          var year = value.getFullYear();
+                             return false;
+                          var DATE_FORMAT = /^[0-9]{4}\/[0-1]{1}[0-9]{1}\/[0-3]{1}[0-9]{1}$/;  
+//                          alert(value);
+                          if(DATE_FORMAT.test(value)){  
+                        	  return true;
+                          } else {  
+                        	  return { result: false, message: "请按照正确的格式输入时间：四位数字年/两位数字月/两位数字日" };
+                          }  
+                         // var year = value.getFullYear();
 //                          if (year >= 2016) {
 //                              return { result: false, message: "选择的日期必须处于光伏原始数据时间段内" };
 //                          }
@@ -552,7 +558,7 @@ $(document).ready(function () {
                 columnsresize: true,
                 columns: [
                   { text: '指标名称', columntype: 'textbox', editable : false, datafield: 'item_1', width: 360},//columntype: 'datetimeinput', 
-                  { text: '推演结果', columntype: 'textbox', editable : true, datafield: 'item_2', width: 320, cellbeginedit: begineditDeduce,cellsformat: 'yyyy/MM/dd',
+                  { text: '推演结果', columntype: 'textbox', editable : false, datafield: 'item_2', width: 320, cellbeginedit: begineditDeduce,//cellsformat: 'yyyy/MM/dd',
                 	  validation: function (cell, value) {
                           if (value == "")
                              return true;
@@ -562,12 +568,13 @@ $(document).ready(function () {
 //                              return { result: false, message: "选择的日期必须处于光伏原始数据时间段内" };
 //                          }
                           return true;
-                      },
+                      }
+                  	/*,
                       cellsrenderer: function (row, columnfield, value, defaulthtml, columnproperties) {
                     	  if (row == 2 || row == 3) {
                           	return '<span style="margin: 2px; float: ' + columnproperties.cellsalign + '; color: #ff0000;">' + defaulthtml + '</span>';
                       	  }
-                      }   
+                      }   */
                   },
                   { text: '指标单位', columntype: 'textbox', editable : false, datafield: 'item_3', width: 320 }
                  
