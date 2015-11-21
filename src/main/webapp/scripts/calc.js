@@ -97,7 +97,9 @@ $(document).ready(function () {
     var setStartTime1 = function() {
     	var destStartDate = DateAddDay(startDate, -1);
     	var tmp = $("#jqxgrid").jqxGrid('getcellvalue', 1, 'item_2');
+    	var station_name = $("#jqxgrid").jqxGrid('getcellvalue', 0, 'item_2');
     	
+    	$("#staticGrid").jqxGrid('setcellvalue', 0, 'item_2', station_name);
     	$("#staticGrid").jqxGrid('setcellvalue', 1, 'item_2', tmp);
     	$("#staticGrid").jqxGrid('setcellvalue', 2, 'item_2', destStartDate);
     	$("#staticGrid").jqxGrid('setcellvalue', 3, 'item_2', endDate);
@@ -108,6 +110,10 @@ $(document).ready(function () {
     		alert("请先在统计计算结果页面完成计算！");
     		return;
     	}
+    	
+    	var station_name = $("#jqxgrid").jqxGrid('getcellvalue', 0, 'item_2');
+    	$("#deduceGrid").jqxGrid('setcellvalue', 0, 'item_2', station_name);
+    	
     	var tmp = $("#jqxgrid").jqxGrid('getcellvalue', 1, 'item_2');
     	$("#deduceGrid").jqxGrid('setcellvalue', 1, 'item_2', tmp);
     	
