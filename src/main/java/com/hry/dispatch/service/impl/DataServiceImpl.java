@@ -453,7 +453,7 @@ public class DataServiceImpl {
 				double firstValueJudgeBoard = getStaticDataFromMap(cont, stIndex, 2);
 				double currentValueJudgeBoard = selecedDaySampleData;
 				double costCheckPeriod = 365;
-				double dayAvgProcudeElecAmout = (currentValueModelBoard - firstValueModelBoard) * beiRate / dayCount * 50000 / 6 / 10000;
+				double dayAvgProcudeElecAmout = (currentValueModelBoard - firstValueModelBoard) * beiRate / dayCount * chuanNum / 6;
 				double dayFallIndex = (currentValueModelBoard - firstValueModelBoard - currentValueJudgeBoard - firstValueJudgeBoard) * 2 / (dayCount + 1) / currentValueModelBoard;
 				
 				double tmp_wholeyeareachdaywashsumcost = costCheckPeriod * onceWashCost;
